@@ -23,7 +23,7 @@
   "kind": "prayer",
   "id": "k02",
   "fringe": true,
-  "w": 3265,
+  "w": 3493,
   "h": 4096,
   "upscale": "real-esrgan x4"
  },
@@ -87,7 +87,7 @@
   "kind": "prayer",
   "id": "k09",
   "fringe": true,
-  "w": 2386,
+  "w": 2589,
   "h": 4096,
   "upscale": "native"
  },
@@ -96,7 +96,7 @@
   "kind": "prayer",
   "id": "k10",
   "fringe": true,
-  "w": 2553,
+  "w": 2583,
   "h": 4096,
   "upscale": "native"
  },
@@ -105,7 +105,7 @@
   "kind": "prayer",
   "id": "k11",
   "fringe": true,
-  "w": 2442,
+  "w": 2120,
   "h": 4096,
   "upscale": "native"
  },
@@ -168,7 +168,7 @@
   "kind": "pile",
   "id": "k18",
   "fringe": false,
-  "w": 2606,
+  "w": 2471,
   "h": 4096,
   "upscale": "real-esrgan x4"
  }
