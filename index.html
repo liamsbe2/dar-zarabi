@@ -826,13 +826,28 @@ window.__museum={openPiece:id=>openPiece(pieceById[id]),enter,walkTo,set:(e,v)=>
 }catch(err){console.error(err);noGL();}
 
 /* ================= VIEW IN YOUR ROOM (AR) =================
-   The chosen carpet is built right here in the browser as a real-size 3D rug (a GLB made from its own photo,
-   at the size picked in the panel) and shown with <model-viewer>. On a phone it can be laid on the real floor:
-   Android through WebXR, iPhone through AR Quick Look (model-viewer turns the rug into USDZ by itself).
-   Scene Viewer is left out on purpose: it is a separate app that has to download the model from a public address, and this rug only exists in the page. */
+   Each carpet has ready-made 3D rugs, one per size (build/arbuild.py -> ar/<id>_<w>x<h>.glb + .usdz, list in ar/index.json):
+   a top-down texture of the real rug, true size and thickness, rounded bound edge and a wool-pile normal map.
+   Shown with <model-viewer>; on a phone it is laid on the real floor:
+   - iPhone: AR Quick Look with our USDZ file (true size locked, a WhatsApp order banner inside AR)
+   - Android: WebXR in Chrome, else Google Scene Viewer (it downloads the GLB from the site).
+   Where ar/ is missing (claude.ai preview) the rug is built in the browser from the photo, as before. */
 const MV_URL='https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js';
 const QR_URL='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-const AR={mv:null,mvReady:null,url:null,piece:null,size:null,tok:0};
+const AR={mv:null,mvReady:null,url:null,piece:null,size:null,tok:0,files:null};
+/* the list of ready-made rugs; null = not there (preview) -> browser-made fallback */
+const AR_LIST=fetch('ar/index.json').then(r=>r.ok?r.json():null).then(j=>{AR.files=j;arBtnFor(current);return j;}).catch(()=>null);
+function arBase(p,s){const l=AR.files&&AR.files[p.id],b=p.id+'_'+s[0]+'x'+s[1];return l&&l.includes(b)?'ar/'+b:null;}
+/* pieces without a usable top-down photo have no 3D rug yet: no button for them */
+function arBtnFor(p){if(!AR_OK)return;D('arBtn').hidden=!!(p&&AR.files&&!AR.files[p.id]);}
+function arPrice(p,s){return p.perM?'':(priceFor(p,s)?fmt(priceFor(p,s))+' درهم':'');}
+function arWA(p,s){const phone=(p.phone||'06 48 22 53 94').replace(/\s/g,''),pr=arPrice(p,s);
+  const msg=`سلام دار الزرابي، شفت هاد الزربية فالأرض ديال داري (AR) وبغيت نكوموندي:\n• ${p.ar} (${p.acc})\n• الطاي: ${s[0]}×${s[1]}`+(pr?`\n• الثمن: ${pr}`:'');
+  return 'https://wa.me/212'+phone.slice(1)+'?text='+encodeURIComponent(msg);}
+/* AR Quick Look banner (iPhone): name, size and price, and an order button that comes back to the page */
+function qlFragment(p,d){const pr=arPrice(p,d.s),e=encodeURIComponent;
+  return '#callToAction='+e('كوموندي فواتساب')+'&checkoutTitle='+e(p.ar+' · Dar Zarabi')+'&checkoutSubtitle='+e(d.s[0]+' × '+d.s[1]+' سم'+(pr?' · '+pr:''))
+    +(/^https:/.test(location.protocol)?'&canonicalWebPageURL='+e(location.origin+location.pathname+'#piece-'+p.id):'');}
 /* sizes offered in the AR view: the piece's own sizes, or common sizes as an example when it has none (moquette, unknown sizes) */
 const AR_EX=[[120,170],[160,230],[200,300],[250,350]];
 function arSizes(p){return p.sizes&&p.sizes.length&&!p.perM?{list:p.sizes,ex:false}:{list:AR_EX,ex:true};}
@@ -881,6 +896,7 @@ function mkViewer(){const mv=document.createElement('model-viewer');
   mv.innerHTML='<button slot="ar-button" class="cta ar-go" type="button">حط الزربية فالأرض ديالك</button>';
   mv.addEventListener('load',()=>{D('arLoad').hidden=true;arHint();});
   mv.addEventListener('error',()=>{D('arLoad').hidden=false;D('arLoad').textContent='ما قدرناش نوجدو الزربية 3D فهاد الجهاز.';});
+  mv.addEventListener('quick-look-button-tapped',()=>{if(AR.piece&&AR.size)location.href=arWA(AR.piece,AR.size);});
   mv.addEventListener('ar-status',e=>{if(e.detail.status==='failed')D('arHint').textContent='الـ AR ما خدمش فهاد التيليفون. جرب Chrome فأندرويد ولا Safari فآيفون.';});
   D('arStage').appendChild(mv);return mv;}
 async function showRug(p,d){
@@ -888,10 +904,18 @@ async function showRug(p,d){
   D('arSize').textContent=d.label;D('arLoad').hidden=false;D('arLoad').textContent='كنوجدو الزربية بالقياس ديالها…';
   D('arSizes').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s===d.s.join('x')));
   try{
+    await AR_LIST;const base=arBase(p,d.s);
+    if(base){
+      await ensureMV();if(tok!==AR.tok)return;
+      if(!AR.mv)AR.mv=mkViewer();
+      AR.mv.setAttribute('ar-modes','webxr scene-viewer quick-look');
+      AR.mv.alt=p.ar+' '+d.label;AR.mv.iosSrc=base+'.usdz'+qlFragment(p,d);AR.mv.src=base+'.glb';
+      return;}
     const [blob]=await Promise.all([rugBlob(p,d),ensureMV()]);
     if(tok!==AR.tok)return;
     if(AR.url)URL.revokeObjectURL(AR.url);AR.url=URL.createObjectURL(blob);
     if(!AR.mv)AR.mv=mkViewer();
+    AR.mv.setAttribute('ar-modes','webxr quick-look');AR.mv.iosSrc=null;
     AR.mv.alt=p.ar+' '+d.label;AR.mv.src=AR.url;
   }catch(e){console.error(e);if(tok===AR.tok)D('arLoad').textContent='ما قدرناش نوجدو الزربية دابا. عاود من بعد.';}
 }
@@ -919,12 +943,13 @@ function closeAR(){D('arOvl').classList.remove('show');setTimeout(()=>{D('arOvl'
 /* devices without WebGL can't show the 3D rug either, so the button is hidden there */
 const AR_OK=(()=>{try{const c=document.createElement('canvas'),g=c.getContext('webgl2')||c.getContext('webgl');if(!g)return false;const x=g.getExtension('WEBGL_lose_context');if(x)x.loseContext();return true;}catch(e){return false;}})();
 if(!AR_OK)D('arBtn').hidden=true;
+new MutationObserver(()=>{if(D('panel').classList.contains('open'))arBtnFor(current);}).observe(D('panel'),{attributes:true,attributeFilter:['class']});
 D('arBtn').onclick=openAR;D('arClose').onclick=closeAR;
 D('arOvl').addEventListener('click',e=>{if(e.target===D('arOvl'))closeAR();});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!D('arOvl').hidden){closeAR();e.stopPropagation();}},true);
 /* a link ending in -ar (from the QR code) opens the piece, then its AR view */
 {const m=location.hash.match(/^#piece-(\w+)-ar$/);if(m){const mo=new MutationObserver(()=>{if(D('panel').classList.contains('open')&&current&&current.id===m[1]){mo.disconnect();setTimeout(openAR,350);}});
   mo.observe(D('panel'),{attributes:true,attributeFilter:['class']});}}
-window.__ar={openAR,closeAR,rugBlob,arDims,state:()=>({open:!D('arOvl').hidden,size:AR.size,loaded:!!(AR.mv&&AR.mv.loaded),canAR:!!(AR.mv&&AR.mv.canActivateAR)})};
+window.__ar={openAR,closeAR,rugBlob,arDims,qlFragment,arWA,state:()=>({open:!D('arOvl').hidden,size:AR.size,loaded:!!(AR.mv&&AR.mv.loaded),canAR:!!(AR.mv&&AR.mv.canActivateAR),src:AR.mv&&AR.mv.src,ios:AR.mv&&AR.mv.iosSrc,modes:AR.mv&&AR.mv.getAttribute('ar-modes'),btn:!D('arBtn').hidden})};
 
 </script>
