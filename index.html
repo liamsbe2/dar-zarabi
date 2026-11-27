@@ -850,8 +850,11 @@ function qlFragment(p,d){const pr=arPrice(p,d.s),e=encodeURIComponent;
     +(/^https:/.test(location.protocol)?'&canonicalWebPageURL='+e(location.origin+location.pathname+'#piece-'+p.id):'');}
 /* sizes offered in the AR view: the piece's own sizes, or common sizes as an example when it has none (moquette, unknown sizes) */
 const AR_EX=[[120,170],[160,230],[200,300],[250,350]];
-function arSizes(p){return p.sizes&&p.sizes.length&&!p.perM?{list:p.sizes,ex:false}:{list:AR_EX,ex:true};}
-function arDims(p,s){const o=arSizes(p);s=s||(curSize&&current===p&&!o.ex?curSize:null)||(o.ex?(p.perM?[200,300]:[160,230]):o.list[0]);
+function arSizes(p){if(p.sizes&&p.sizes.length&&!p.perM)return {list:p.sizes,ex:false};
+  /* no fixed sizes: the example sizes the ready-made rugs were built in (prayer rugs get small ones) */
+  const l=AR.files&&AR.files[p.id];if(l&&l.length)return {list:l.map(b=>b.split('_').pop().split('x').map(Number)),ex:true};
+  return {list:AR_EX,ex:true};}
+function arDims(p,s){const o=arSizes(p);s=s||(curSize&&current===p&&!o.ex?curSize:null)||(o.ex?(o.list.find(x=>x.join('x')===(p.perM?'200x300':'160x230'))||o.list[0]):o.list[0]);
   return {s,w:s[0]/100,h:s[1]/100,label:s[0]+' × '+s[1]+' سم'+(o.ex?' (قياس مثال)':'')};}
 /* a thin box (8 mm) lying on the floor, the photo on top and its border colour running down the sides */
 function rugGeometry(w,h){const t=0.008,x=w/2,z=h/2,P=[],N=[],T=[],I=[];

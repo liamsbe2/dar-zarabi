@@ -1,0 +1,175 @@
+{
+ "k01": {
+  "alley": "moquette",
+  "kind": "shag",
+  "sizes": [
+   [
+    80,
+    150
+   ],
+   [
+    60,
+    120
+   ]
+  ],
+  "id": "k01",
+  "fringe": true,
+  "w": 3432,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k02": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k02",
+  "fringe": true,
+  "w": 3265,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k03": {
+  "alley": "classique",
+  "kind": "pile",
+  "id": "k03",
+  "fringe": true,
+  "w": 3046,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k04": {
+  "alley": "moquette",
+  "kind": "shag",
+  "sizes": [
+   [
+    80,
+    150
+   ],
+   [
+    60,
+    120
+   ]
+  ],
+  "id": "k04",
+  "fringe": true,
+  "w": 3432,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k05": {
+  "alley": "classique",
+  "kind": "pile",
+  "id": "k05",
+  "fringe": false,
+  "w": 2746,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k07": {
+  "alley": "moderne",
+  "kind": "pile",
+  "id": "k07",
+  "fringe": false,
+  "w": 2294,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k08": {
+  "alley": "bazaar",
+  "kind": "flat",
+  "id": "k08",
+  "fringe": true,
+  "w": 2406,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k09": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k09",
+  "fringe": true,
+  "w": 2386,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k10": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k10",
+  "fringe": true,
+  "w": 2553,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k11": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k11",
+  "fringe": true,
+  "w": 2442,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k12": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k12",
+  "fringe": true,
+  "w": 2552,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k13": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k13",
+  "fringe": true,
+  "w": 2553,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k14": {
+  "alley": "moderne",
+  "kind": "pile",
+  "id": "k14",
+  "fringe": false,
+  "w": 2293,
+  "h": 4096,
+  "upscale": "native"
+ },
+ "k15": {
+  "alley": "classique",
+  "kind": "pile",
+  "id": "k15",
+  "fringe": false,
+  "w": 3114,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k16": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k16",
+  "fringe": true,
+  "w": 2846,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k17": {
+  "alley": "bazaar",
+  "kind": "prayer",
+  "id": "k17",
+  "fringe": true,
+  "w": 2846,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ },
+ "k18": {
+  "alley": "classique",
+  "kind": "pile",
+  "id": "k18",
+  "fringe": false,
+  "w": 2606,
+  "h": 4096,
+  "upscale": "real-esrgan x4"
+ }
+}
