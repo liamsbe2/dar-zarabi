@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="دار الزرابي، بجعد: تمشى فزناقي المدينة القديمة وشوف الزرابي معلقين على الحيوط، وكوموندي فواتساب.">
+<meta name="theme-color" content="#0d0a08">
+<link rel="icon" href="img/logo-gold.png">
+<title>متحف دار الزرابي</title>
+<script>document.documentElement.dir="rtl";document.documentElement.lang="ar";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&family=Marcellus&family=Noto+Kufi+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-screen WebGL corridor of Moroccan horseshoe arches; carpets hang on both walls under spotlights.
+   HTML layers on top: entrance veil, HUD (room name + progress rail), hover label, and a detail/order panel. Single committed dark look. */
+:root{
+  --night:#0d0a08;
+  --panel:#16120e;
+  --ink:#f1e8d8;
+  --ink-dim:#ab9e89;
+  --gold:#c9a96e;
+  --gold-hi:#ecd39d;
+  --vert:#3f7a5e;
+  --line:rgba(201,169,110,.22);
+  --f-ar-display:"Reem Kufi","Noto Kufi Arabic",system-ui,sans-serif;
+  --f-ar:"Noto Kufi Arabic",system-ui,sans-serif;
+  --f-latin:"Marcellus","Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{direction:rtl;background:var(--night);color:var(--ink);font-family:var(--f-ar);font-size:15px;line-height:1.7;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px}
+#stage{position:fixed;inset:0;overflow:hidden;touch-action:none;cursor:grab;background:#1a140f}
+#world{position:absolute;inset:0}
+.scene{position:absolute;left:0;top:0;width:1024px;height:576px;transform-origin:0 0;will-change:transform,opacity}
+.scene .bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.rug{position:absolute;left:0;top:0;padding:0;border:0;background:none;transform-origin:0 0;cursor:pointer;
+  box-shadow:0 0 0 0 rgba(0,0,0,0),3px 8px 14px rgba(40,25,10,.35);transition:filter .3s}
+.rug img{display:block;width:100%;height:100%;object-fit:fill;filter:brightness(.93) contrast(1.06) saturate(.92) sepia(.06)}
+.rug .sheen{position:absolute;inset:0;background:linear-gradient(100deg,rgba(255,240,215,.0) 30%,rgba(255,240,215,.14) 50%,rgba(255,240,215,0) 70%);mix-blend-mode:screen;pointer-events:none}
+.rug:hover,.rug:focus-visible{filter:brightness(1.12) drop-shadow(0 0 6px rgba(236,211,157,.6))}
+.rug.picked{filter:brightness(1.15) drop-shadow(0 0 8px rgba(236,211,157,.9))}
+.dot{position:absolute;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--gold-hi);box-shadow:0 0 0 0 rgba(236,211,157,.7);animation:pulse 2s infinite;pointer-events:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(236,211,157,.7)}70%{box-shadow:0 0 0 10px rgba(236,211,157,0)}100%{box-shadow:0 0 0 0 rgba(236,211,157,0)}}
+.sign[data-edge=l]::before,.sign[data-edge=r]::after{content:'';position:absolute;top:50%;width:0;height:0;border:7px solid transparent;margin-top:-7px}
+.sign[data-edge=l]::before{right:100%;border-right-color:var(--gold-hi)}
+.sign[data-edge=r]::after{left:100%;border-left-color:var(--gold-hi)}
+.rug.hot{background:transparent}
+.rug.hot:hover,.rug.hot:focus-visible{background:rgba(255,240,215,.12);outline:2px solid rgba(236,211,157,.85);filter:none}
+.rug.hot.picked{background:rgba(255,240,215,.16);outline:2px solid var(--gold-hi);filter:none}
+.dot3{position:absolute;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--gold-hi);opacity:0;transition:opacity .4s;pointer-events:none;will-change:transform}
+.dot3.show{opacity:.85}
+.ovl{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+.sign{position:absolute;left:0;top:0;pointer-events:auto;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s .6s;display:grid;justify-items:center;gap:2px;background:rgba(18,14,11,.82);color:var(--ink);border:1px solid rgba(236,211,157,.45);padding:9px 16px 10px;cursor:pointer;font:inherit;will-change:transform}
+.sign.show{opacity:1;visibility:visible;transition:opacity .6s ease .15s}
+.sign i{position:relative;width:9px;height:9px;border-radius:50%;background:var(--gold-hi);margin-bottom:3px}
+.sign i::after,.dot3::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(236,211,157,.8);opacity:0;pointer-events:none}
+.sign.show i::after,.dot3.show::after{animation:ring 2s infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.85}70%{transform:scale(2.7);opacity:0}100%{transform:scale(2.7);opacity:0}}
+.ghost{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(13,10,8,.62)}
+.sign span{font-family:var(--f-latin);letter-spacing:.28em;font-size:9.5px;color:var(--gold)}
+.sign b{font-family:var(--f-ar-display);font-size:17px;font-weight:600;white-space:nowrap}
+.sign:hover,.sign:focus-visible{background:rgba(18,14,11,.88);border-color:var(--gold-hi)}
+.sign.nudge{animation:nudge .7s ease}
+@keyframes nudge{30%{box-shadow:0 0 0 8px rgba(236,211,157,.35);border-color:var(--gold-hi)}}
+@media (max-width:640px){.sign{padding:6px 10px}.sign b{font-size:13px}.sign span{display:none}}
+.end-ovl{position:fixed;left:50%;top:46%;transform:translate(-50%,-50%) scale(.96);z-index:4;opacity:0;visibility:hidden;transition:opacity .5s,transform .5s,visibility 0s .5s;width:min(380px,calc(100% - 32px));display:grid;justify-items:center;gap:10px;background:rgba(18,14,11,.84);color:var(--ink);padding:22px 20px;text-align:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(236,211,157,.25)}
+.end-ovl.show{opacity:1;visibility:visible;transform:translate(-50%,-50%);transition:opacity .5s,transform .5s}
+.end-ovl img{width:44px}.end-ovl b{font-family:var(--f-ar-display);font-size:22px}
+.end-ovl .links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.scene .bg{width:100%;height:100%;object-fit:cover;display:block}
+.ar-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin:4px 0 18px;padding:12px 16px;background:transparent;color:var(--gold-hi);border:1px solid var(--gold);border-radius:2px;font-family:var(--f-ar-display);font-size:17px;cursor:pointer;transition:background .25s,color .25s}
+.ar-btn[hidden]{display:none}
+.ar-btn svg{width:22px;height:22px;flex:none}
+.ar-btn small{font-family:var(--f-latin);font-size:10px;letter-spacing:.2em;border:1px solid currentColor;padding:1px 6px;border-radius:999px;opacity:.85}
+.ar-btn:hover,.ar-btn:focus-visible{background:var(--gold);color:#1b1610}
+.ar-ovl{position:fixed;inset:0;z-index:15;display:grid;place-items:center;padding:16px;background:rgba(8,6,5,.78);opacity:0;transition:opacity .3s}
+.ar-ovl.show{opacity:1}
+.ar-ovl[hidden]{display:none}
+.ar-card{width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:16px;display:grid;gap:12px;transform:translateY(12px);transition:transform .3s}
+.ar-ovl.show .ar-card{transform:none}
+.ar-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ar-head b{display:block;font-family:var(--f-ar-display);font-size:20px;font-weight:600}
+.ar-head span{display:block;color:var(--gold-hi);font-size:14px;margin-top:2px}
+.ar-sizes{display:flex;flex-wrap:wrap;gap:6px}
+.ar-sizes:empty{display:none}
+.ar-sizes button{background:transparent;color:var(--ink-dim);border:1px solid var(--line);padding:5px 12px;border-radius:999px;font-size:13px;cursor:pointer}
+.ar-sizes button.on{color:#1b1610;background:var(--gold-hi);border-color:var(--gold-hi)}
+.ar-stage{position:relative;height:min(52vh,400px);background:radial-gradient(ellipse at 50% 60%,#3a3027 0%,#1d1814 70%);overflow:hidden}
+.ar-stage model-viewer{width:100%;height:100%;--poster-color:transparent;background:transparent}
+.ar-load{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:16px;color:var(--ink-dim);font-size:14px;z-index:1;pointer-events:none}
+.ar-load[hidden]{display:none}
+.ar-go{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--vert);color:#fff;font-size:16px;padding:11px 20px;white-space:nowrap}
+.ar-hint{margin:0;color:var(--ink-dim);font-size:14px;line-height:1.7}
+.ar-hint:empty{display:none}
+.ar-qr{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:12px;font-size:13px;color:var(--ink-dim);line-height:1.7}
+.ar-qr[hidden]{display:none}
+#arQrCode{flex:none;background:#f1e8d8;padding:6px;line-height:0}
+#arQrCode img,#arQrCode canvas{width:132px;height:132px}
+@media (max-width:640px){.ar-ovl{padding:0;place-items:end stretch}.ar-card{width:100%;max-height:92vh;border-radius:14px 14px 0 0}.ar-stage{height:min(48vh,380px)}.ar-qr{display:none}}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 50%,transparent 55%,rgba(20,12,6,.45))}
+.passage{position:absolute;left:512px;top:250px;transform:translate(-50%,-50%);text-align:center;color:#2a241e;background:rgba(236,228,212,.92);padding:6px 14px;font-size:9px;display:grid}
+.passage span{font-family:var(--f-latin);letter-spacing:.3em;font-size:6px;color:#6b4f22}
+.passage b{font-family:var(--f-ar-display);font-size:13px;font-weight:600}
+.end-card{position:absolute;left:300px;top:380px;transform:translate(-50%,-50%);width:230px;display:grid;justify-items:center;gap:4px;background:rgba(18,14,11,.82);color:var(--ink);padding:12px;text-align:center;font-size:7px;backdrop-filter:blur(2px)}
+.end-card img{width:30px}.end-card b{font-family:var(--f-ar-display);font-size:15px}.end-card .phone{font-size:8px}
+.end-card .cta{font-size:9px;padding:5px 12px;gap:4px}
+body.focus .vignette{background:rgba(13,10,8,.35)}
+
+/* ---------- HUD ---------- */
+.hud-top{position:fixed;inset:0 0 auto;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) max(16px,env(safe-area-inset-right,0px)) 14px max(16px,env(safe-area-inset-left,0px));
+  background:linear-gradient(rgba(13,10,8,.75),transparent);pointer-events:none}
+.brand{display:flex;align-items:center;gap:10px;pointer-events:auto}
+.brand img{height:40px;width:auto}
+.brand span{font-family:var(--f-latin);letter-spacing:.28em;font-size:11px;color:var(--gold)}
+.room-now{text-align:center;transition:opacity .5s}
+.room-now .n{font-family:var(--f-latin);font-size:11px;letter-spacing:.32em;color:var(--gold)}
+.room-now .t{font-family:var(--f-ar-display);font-size:clamp(18px,2.2vw,26px);line-height:1.2}
+.ghost{pointer-events:auto;background:rgba(13,10,8,.4);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;backdrop-filter:blur(6px);color:var(--ink);text-decoration:none}
+.ghost:hover{background:rgba(201,169,110,.15)}
+.hud-bottom{position:fixed;inset:auto 0 0;z-index:5;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));
+  background:linear-gradient(transparent,rgba(13,10,8,.8));display:grid;gap:10px;justify-items:center}
+.hint{font-size:12.5px;color:var(--ink-dim);display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;text-align:center}
+.hint kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--ink)}
+.rail-wrap{display:flex;align-items:center;gap:12px;width:min(720px,100%)}
+.step{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(13,10,8,.5);display:grid;place-items:center}
+.step svg{width:16px;height:16px}
+.step:hover{background:rgba(201,169,110,.15)}
+.rail{position:relative;flex:1;height:34px;min-width:0;margin-inline:22px}
+.rail::before{content:"";position:absolute;inset:14px 0 auto;height:2px;background:rgba(241,232,216,.14)}
+.rail .fill{position:absolute;top:14px;right:0;height:2px;background:var(--gold);width:0}
+.rail button{position:absolute;top:0;transform:translateX(50%);background:none;border:0;padding:0;display:grid;justify-items:center;gap:2px;font-size:10.5px;color:var(--ink-dim);white-space:nowrap}
+.rail button i{width:10px;height:10px;border-radius:50%;background:var(--night);border:2px solid var(--gold);margin-top:10px}
+.rail button.on{color:var(--gold-hi)}
+.rail button.on i{background:var(--gold)}
+@media (max-width:640px){.rail button span{display:none}.brand span{display:none}.hint .k{display:none}.hud-top .ghost{display:none}}
+
+/* hover label */
+#tip{position:fixed;z-index:6;pointer-events:none;background:rgba(236,228,212,.96);color:#2a241e;padding:6px 12px 7px;transform:translate(50%,-130%);
+  box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;white-space:nowrap}
+#tip .t{font-family:var(--f-ar-display);font-weight:600;font-size:16px;display:block;line-height:1.3}
+#tip .p{font-size:12px}
+#tip.show{opacity:1}
+
+/* ---------- Entrance veil ---------- */
+#veil{position:fixed;inset:0;z-index:20;display:grid;place-items:center;text-align:center;
+  background:radial-gradient(ellipse 60% 65% at 50% 45%,rgba(13,10,8,.45),rgba(13,10,8,.9) 75%),url(img/alley_hero_1.jpg) center/cover no-repeat,var(--night);transition:opacity 1.2s ease,visibility 0s 1.2s;
+  padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+#veil.gone{opacity:0;visibility:hidden}
+.veil-in{display:grid;justify-items:center;gap:10px;max-width:560px}
+.veil-in img{width:116px;filter:drop-shadow(0 0 24px rgba(201,169,110,.35))}
+.eyebrow{font-family:var(--f-latin);font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold)}
+#veil h1{font-family:var(--f-ar-display);font-weight:600;font-size:clamp(46px,8vw,92px);line-height:1.05;margin:0;text-wrap:balance}
+#veil h1 span{color:var(--gold)}
+#veil p{color:var(--ink-dim);margin:4px 0 18px}
+.cta{display:inline-flex;align-items:center;gap:12px;background:var(--gold);color:#1b1610;border:0;padding:14px 30px;font-family:var(--f-ar-display);font-size:19px;font-weight:600;border-radius:2px;transition:background .25s,transform .25s}
+.cta:hover{background:var(--gold-hi);transform:translateY(-2px)}
+.cta svg{width:18px;height:18px}
+.loading{font-size:12px;color:var(--ink-dim);min-height:1.5em}
+
+/* ---------- Detail / order panel ---------- */
+#panel{position:fixed;z-index:10;top:0;bottom:0;left:0;width:min(480px,100%);background:linear-gradient(90deg,rgba(18,14,11,.97),rgba(18,14,11,.93));
+  border-inline-start:1px solid var(--line);overflow-y:auto;transform:translateX(-104%);transition:transform .7s cubic-bezier(.2,.8,.2,1);
+  padding:calc(env(safe-area-inset-top,0px) + 18px) max(22px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 28px) max(22px,env(safe-area-inset-left,0px));
+  box-shadow:30px 0 60px rgba(0,0,0,.5)}
+#panel.open{transform:none}
+.p-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:18px}
+.p-bar .navs{display:flex;gap:8px}
+.icon-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--line);padding:7px 14px;border-radius:999px;font-size:13px}
+.icon-btn:hover{background:rgba(201,169,110,.12)}
+.icon-btn svg{width:16px;height:16px}
+.p-img{background:#e9e1d1;padding:6px;box-shadow:inset 0 0 0 2px rgba(232,207,152,.5),0 14px 30px rgba(0,0,0,.5);position:relative;overflow:hidden;cursor:zoom-in}
+.p-img img{display:block;width:100%;max-height:44vh;object-fit:contain;transition:transform .3s}
+.p-img.zoom img{transform:scale(2.2);cursor:zoom-out}
+.thumbs{display:flex;gap:8px;margin-top:10px}
+.thumbs button{border:1px solid var(--line);padding:2px;background:#e9e1d1;width:54px;height:54px}
+.thumbs button.on{outline:2px solid var(--gold)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+.acc{font-family:var(--f-mono);font-size:11.5px;color:var(--gold);letter-spacing:.14em;margin-top:20px}
+#pTitle{font-family:var(--f-ar-display);font-weight:600;font-size:clamp(32px,4vw,44px);line-height:1.1;margin:.1em 0 0;text-wrap:balance}
+.fr{font-family:var(--f-latin);color:var(--ink-dim);font-size:17px;letter-spacing:.05em}
+.desc{color:#d8cebc;margin:14px 0 18px}
+.price-block{border-block:1px solid var(--line);padding-block:16px;margin-bottom:18px}
+.price-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px}
+.price{font-family:var(--f-latin);font-size:40px;color:var(--gold-hi);line-height:1}
+.price small{font-family:var(--f-ar);font-size:15px;color:var(--ink-dim);margin-inline-start:6px}
+.old{color:var(--ink-dim);text-decoration:line-through;font-size:17px}
+.lbl{font-size:13px;color:var(--ink-dim);margin:14px 0 8px}
+.sizes{display:flex;flex-wrap:wrap;gap:8px}
+.sizes button{background:transparent;border:1px solid rgba(241,232,216,.25);padding:7px 13px;border-radius:2px;font-family:var(--f-mono);font-size:13px}
+.sizes button.on{border-color:var(--gold);background:rgba(201,169,110,.14);color:var(--gold-hi)}
+.tbd{display:inline-flex;align-items:center;font-family:var(--f-ar);font-size:11px;color:#1b1610;background:#d9b46a;padding:1px 8px;border-radius:999px;vertical-align:middle;white-space:nowrap}
+.ok{background:var(--vert);color:#fff}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;margin:0 0 20px;font-size:14px}
+.specs dt{color:var(--ink-dim)}
+.specs dd{margin:0}
+.order{background:rgba(255,255,255,.03);border:1px solid var(--line);padding:18px;display:grid;gap:12px}
+.order h3{margin:0;font-family:var(--f-ar-display);font-weight:500;font-size:20px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:grid;gap:4px;font-size:12.5px;color:var(--ink-dim);min-width:0}
+.field input,.field select{background:rgba(13,10,8,.6);border:1px solid rgba(241,232,216,.2);border-radius:2px;padding:9px 10px;color:var(--ink);width:100%;min-width:0}
+.field input:focus,.field select:focus{border-color:var(--gold);outline:none}
+.wa{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--vert);color:#fff;text-decoration:none;padding:12px 18px;border-radius:2px;font-weight:500;font-size:16px}
+.wa:hover{filter:brightness(1.12)}
+.phone-line{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:13px;color:var(--ink-dim)}
+.phone{font-family:var(--f-mono);font-size:17px;direction:ltr;color:var(--ink);user-select:all}
+.note{font-size:12px;color:var(--ink-dim)}
+@media (max-width:640px){
+  #panel{top:auto;left:0;right:0;width:100%;max-height:60vh;transform:translateY(104%);border-inline-start:0;border-top:1px solid var(--line);border-radius:14px 14px 0 0}
+  .p-img img{max-height:26vh}
+}
+
+/* fallback when WebGL is missing */
+#nogl{position:fixed;inset:0;z-index:30;overflow:auto;background:var(--night);padding:80px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+#nogl .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:18px;max-width:1100px;margin:20px auto}
+#nogl button{background:#e9e1d1;border:0;padding:6px;color:#2a241e;text-align:start}
+#nogl img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+body.focus .hud-bottom,body.focus #tip{opacity:0;pointer-events:none}
+.hud-bottom{transition:opacity .4s}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="stage" aria-label="زنقة المعرض"><div id="world"></div><div class="vignette"></div><div class="ovl" id="ovl"></div></div>
+<div class="end-ovl" id="endCard" role="dialog" aria-label="آخر الزنقة"><img src="img/logo-gold.png" alt=""><b>وصلتي لآخر الزنقة</b><span>توصيل لجميع مدن المغرب · <span class="phone">06 48 22 53 94</span></span><div class="links" id="endLinks"></div><button type="button" class="cta" id="endBack">رجع للمفترق</button></div>
+
+<div class="hud-top">
+  <div class="brand"><img src="img/logo-gold.png" alt="Dar Zarabi"><span>MUSÉE DU TAPIS</span></div>
+  <div class="room-now" id="roomNow"><div class="n" id="roomN">ENTRÉE</div><div class="t" id="roomT">دار الزرابي</div></div>
+  <a class="ghost" href="https://www.instagram.com/dar_elzarabi/" target="_blank" rel="noopener">@dar_elzarabi</a>
+</div>
+
+<div class="hud-bottom">
+  <div class="rail-wrap">
+    <button class="step" id="fwdBtn" type="button" aria-label="تقدم"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5m-6 6l6-6 6 6"/></svg></button>
+    <div class="rail" id="rail"><div class="fill" id="railFill"></div></div>
+    <button class="step" id="backStep" type="button" aria-label="رجع"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m6-6l-6 6-6-6"/></svg></button>
+  </div>
+  <div class="hint">سكرول ولا اسحب باش تتمشى <span class="k">· <kbd>↑</kbd> <kbd>↓</kbd> · حرّك الفأرة باش تشوف يمين ويسار</span> · كليكي على أي زربية</div>
+</div>
+
+<div id="tip"><span class="t" id="tipT"></span><span class="p" id="tipP"></span></div>
+
+<div id="veil">
+  <div class="veil-in">
+    <img src="img/logo-gold.png" alt="Dar Zarabi">
+    <div class="eyebrow">Dar Zarabi · Musée du tapis</div>
+    <h1>متحف <span>دار الزرابي</span></h1>
+    <p>دخل للممر، الزرابي معلقين على اليمين واليسار تحت الضو. كليكي على أي وحدة تشوف التفاصيل، الثمن، وتكوموندي.</p>
+    <button class="cta" id="enterBtn" type="button">ادخل للمعرض
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div class="loading" id="loading">كنوجدو المعرض…</div>
+  </div>
+</div>
+
+<aside id="panel" aria-hidden="true" aria-labelledby="pTitle">
+  <div class="p-bar">
+    <button class="icon-btn" id="closeBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>رجوع للممر</button>
+    <div class="navs">
+      <button class="icon-btn" id="prevBtn" type="button" aria-label="الزربية السابقة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="icon-btn" id="nextBtn" type="button" aria-label="الزربية الجاية"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+    </div>
+  </div>
+  <div class="p-img" id="pImgBox"><img id="pImg" src="img/c13.jpg" alt=""></div>
+  <div class="thumbs" id="pThumbs"></div>
+  <div class="acc" id="pAcc"></div>
+  <h2 id="pTitle"></h2>
+  <div class="fr" id="pFr"></div>
+  <p class="desc" id="pDesc"></p>
+  <div class="price-block">
+    <div class="price-row"><div class="price" id="pPrice"></div><div class="old" id="pOld"></div><span id="pTag"></span></div>
+    <div class="lbl" id="pSizesLbl"></div>
+    <div class="sizes" id="pSizes"></div>
+  </div>
+  <button class="ar-btn" id="arBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></svg><span>شوف الزربية فدارك</span><small>AR</small></button>
+  <dl class="specs" id="pSpecs"></dl>
+  <form class="order" id="orderForm">
+    <h3>كوموندي هاد الزربية</h3>
+    <div class="row">
+      <label class="field">السمية<input id="oName" autocomplete="name" placeholder="السمية ديالك"></label>
+      <label class="field">المدينة<input id="oCity" autocomplete="address-level2" placeholder="مثلا: الدار البيضاء"></label>
+    </div>
+    <div class="row">
+      <label class="field">الطاي<select id="oSize"></select></label>
+      <label class="field">العدد<input id="oQty" type="number" min="1" value="1" inputmode="numeric"></label>
+    </div>
+    <a class="wa" id="waLink" href="#" target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.3 2.2 2.2 0 00.1-1.3c0-.1-.2-.2-.5-.3z"/></svg>
+      صيفط الكوموند فواتساب</a>
+    <div class="phone-line">ولا عيّط: <span class="phone" id="pPhone">06 48 22 53 94</span>
+      <button class="icon-btn" id="copyBtn" type="button" style="padding:4px 10px">نسخ</button><span id="copied" class="note" hidden>تنسخ ✓</span></div>
+    <div class="note">توصيل لجميع مدن المغرب. الثمن النهائي كيتأكد مع دار الزرابي.</div>
+  </form>
+  <p class="note" style="margin-top:18px">نسخة تجريبية: المعلومات اللي عليها «مؤقت» مازال ما تأكداتش.</p>
+</aside>
+
+<div class="ar-ovl" id="arOvl" hidden role="dialog" aria-modal="true" aria-label="شوف الزربية فدارك">
+  <div class="ar-card">
+    <div class="ar-head"><div><b id="arTitle"></b><span id="arSize"></span></div><button class="icon-btn" id="arClose" type="button">سد</button></div>
+    <div class="ar-sizes" id="arSizes"></div>
+    <div class="ar-stage" id="arStage"><div class="ar-load" id="arLoad"></div></div>
+    <p class="ar-hint" id="arHint"></p>
+    <div class="ar-qr" id="arQr" hidden><div id="arQrCode"></div><span>سكاني هاد الكود بالتيليفون، وحط الزربية فالأرض ديال دارك بالقياس الحقيقي.</span></div>
+  </div>
+</div>
+
+<div id="nogl" hidden>
+  <div class="eyebrow" style="text-align:center">Dar Zarabi</div>
+  <p style="text-align:center;color:var(--ink-dim)">هاد الجهاز ما كيقراش 3D. ها الزرابي، كليكي على وحدة تشوف التفاصيل.</p>
+  <div class="grid" id="noglGrid"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ================= DATA ================= */
+const T='<span class="tbd" title="معلومة مؤقتة، خاصها تأكيد">مؤقت</span>';
+const STD=[[160,230],[200,300],[250,350]];
+const ROOMS=[
+  {id:'classique',n:'RUE I',ar:'الزنقة الكلاسيكية',fr:'Rue classique'},
+  {id:'moderne',n:'RUE II',ar:'زنقة الزرابي العصرية',fr:'Rue moderne'},
+  {id:'moquette',n:'RUE III',ar:'زنقة الموكيط',fr:'Rue de la moquette'},
+  {id:'bazaar',n:'RUE IV',ar:'زنقة البازار',fr:'Rue du bazar'},
+];
+const PIECES=[
+  {id:'c13',room:'classique',ar:'الوردة الحمراء',fr:'Rose de Tabriz',rate:180,desc:'زربية كلاسيكية بلون أحمر عميق، فالوسط ميدالية كحلة وذهبية محاطة بأغصان ورد، وإطار عاجي مزخرف.',style:'كلاسيكي فارسي',colors:'أحمر، عاجي، كحل'},
+  {id:'c27',room:'classique',ar:'ليل أصفهان',fr:'Nuit d’Ispahan',rate:190,desc:'أرضية كحلة بحال ليلة صافية، ونجمة كبيرة فالوسط بألوان ترابية ودهبية. قطعة كتعمّر الصالة بوحدها.',style:'كلاسيكي فارسي',colors:'كحل، بيج، ذهبي'},
+  {id:'c29',room:'classique',ar:'قرمز',fr:'Carmin',rate:170,desc:'أحمر صافي وميدالية بيضاء رقيقة، محاطة بإطار عريض منقوش.',style:'كلاسيكي',colors:'أحمر، أبيض'},
+  {id:'c28',room:'classique',ar:'عاج',fr:'Ivoire',rate:170,desc:'ألوان هادئة بين البيج والرمادي، بميدالية ناعمة وورود صغيرة.',style:'كلاسيكي هادئ',colors:'بيج، رمادي فاتح'},
+  {id:'c35',room:'classique',ar:'ياقوت',fr:'Rubis',rate:260,desc:'بوردو مخملي بلمعة حرير، وميدالية عاجية ودهبية بارزة.',style:'فاخر، لمعة حريرية',colors:'بوردو، عاجي، ذهبي'},
+  {id:'c34',room:'classique',ar:'رماد ذهبي',fr:'Cendre dorée',rate:260,desc:'أرضية رمادية بتموجات بحال الرخام، ونقوش ذهبية على الإطار والوسط.',style:'فاخر، لمعة حريرية',colors:'رمادي، عاجي، ذهبي'},
+  {id:'c18',room:'moderne',ar:'إنتيتاش',fr:'Entittach',rate:150,desc:'لوحة تجريدية: ضربات فرشاة كحلة ورمادية وخيوط نحاسية.',style:'عصري تجريدي',colors:'كحل، رمادي، نحاسي'},
+  {id:'c02',room:'moderne',ar:'موجة',fr:'La Vague',price:169,old:250,sizes:null,real:true,gift:true,desc:'موجات رمادية وسوداء ولمسات فضية. عرض من الانستغرام: 169 درهم بدل 250، ومعاها زربية هدية.',style:'عصري',colors:'رمادي، أسود، فضي'},
+  {id:'c24',room:'moderne',ar:'إيقاع',fr:'Rythme',rate:150,desc:'خطوط حمراء وذهبية كتلتوى فوق أرضية بيضاء، بحال إيقاع موسيقي.',style:'عصري',colors:'أبيض، أحمر، ذهبي'},
+  {id:'c31',room:'moderne',ar:'متاهة',fr:'Labyrinthe',rate:140,desc:'مربعات متداخلة محفورة فالصوف بلون بيج موحد.',style:'عصري بارز',colors:'بيج'},
+  {id:'c12',room:'moderne',ar:'بيج بلجيك',fr:'Beige Belgique',rate:150,realName:true,desc:'موديل «Beige Belgique»: مربعات بيج وبني بنقشة هندسية واضحة.',style:'عصري هندسي',colors:'بيج، بني'},
+  {id:'c17',room:'classique',ar:'صالون ملكي',fr:'Salon royal',rate:220,sizes:[[250,350],[300,400],[400,600]],desc:'زربية كبيرة لصالون مغربي، بيج ودهبي، بنجمة ثمانية فالوسط.',style:'صالون مغربي',colors:'بيج، ذهبي'},
+  {id:'c33',room:'moderne',ar:'بوردو الصالون',fr:'Salon bordeaux',rate:200,sizes:[[200,300],[300,400],[400,600]],desc:'مخمل بوردو مع إطار أبيض مطروز وميدالية فالوسط.',style:'صالون مغربي',colors:'بوردو، أبيض'},
+  {id:'c20',room:'bazaar',ar:'سجاد المدينة',fr:'Sajad El Madina',price:250,sizes:[[80,120]],realName:true,extra:['c14'],desc:'«سجاد المدينة المنورة فقط في DAR ZARABI». سجادة صلاة ناعمة بأهداب ووجه منقوش.',style:'سجاد صلاة',colors:'أخضر، كحل، عاجي'},
+  {id:'c04',room:'moquette',ar:'فراش المساجد',fr:'Tapis de mosquée',perM:true,phone:'06 61 99 19 95',desc:'أفرشة المساجد فجميع المدن: كنقيسو ونركبو فالبلاصة. الثمن على حسب المساحة.',style:'فراش المساجد، تركيب',colors:'أحمر، أبيض'},
+
+  {id:'mq1',room:'moquette',ar:'موكيط بيج',fr:'Moquette beige',perM:true,demo:true,desc:'موكيط لون واحد، كيتقاد على القياس ديال البيت ولا المكتب. كنقيسو ونركبو فالبلاصة.',style:'موكيط على القياس',colors:'بيج'},
+  {id:'mq2',room:'moquette',ar:'موكيط رمادي',fr:'Moquette grise',perM:true,demo:true,desc:'رمادي هادي كيمشي مع كلشي، مزيان للصالة والمكاتب.',style:'موكيط على القياس',colors:'رمادي'},
+  {id:'mq3',room:'moquette',ar:'موكيط أخضر',fr:'Moquette verte',perM:true,demo:true,desc:'أخضر عميق، كيتستعمل بزاف فالمساجد والقاعات الكبيرة.',style:'موكيط على القياس',colors:'أخضر'},
+  {id:'bz1',room:'bazaar',ar:'كليم أصفر عتيق',fr:'Kilim ancien jaune',rate:200,demo:true,desc:'كليم أمازيغي منسوج باليد، أصفر وبرتقالي بنقوش معينات زرقاء.',style:'كليم قديم، بازار',colors:'أصفر، برتقالي، أزرق'},
+  {id:'bz2',room:'bazaar',ar:'حنبل',fr:'Hanbel',rate:180,demo:true,desc:'حنبل تقليدي بألوان طبيعية مطفية بالزمان.',style:'حنبل، بازار',colors:'أحمر، بيج'},
+  {id:'bz3',room:'bazaar',ar:'زربية الأطلس',fr:'Tapis du Moyen Atlas',rate:190,demo:true,desc:'زربية من الأطلس بنقوش هندسية حمراء وبيضاء.',style:'أطلس، بازار',colors:'أحمر، أبيض'},
+  {id:'bz4',room:'bazaar',ar:'كليم أحمر كبير',fr:'Grand kilim rouge',rate:210,demo:true,sizes:[[200,300],[250,350],[300,400]],desc:'كليم كبير بأحمر قوي ونقوش زرقاء وبيضاء، قطعة ديال البازار.',style:'كليم قديم، بازار',colors:'أحمر، أزرق، أبيض'},
+];
+PIECES.forEach((p,i)=>{p.acc='DZ-'+String(i+1).padStart(3,'0');p.sizes=p.sizes===undefined?STD:p.sizes;});
+const fmt=n=>n.toLocaleString('fr-MA').replace(/ | /g,' ');
+const priceFor=(p,s)=>p.perM?null:p.price?p.price:Math.round(s[0]*s[1]/10000*p.rate/10)*10;
+const fromPrice=p=>p.perM?'على حسب المساحة':(p.price?'':'من ')+fmt(priceFor(p,p.sizes?p.sizes[0]:null))+' درهم';
+const D=id=>document.getElementById(id);
+
+/* ================= DETAIL PANEL ================= */
+let current=null,curSize=null;
+function renderPrice(p,s){
+  curSize=s;
+  if(p.perM){D('pPrice').innerHTML='<small style="margin:0;font-size:20px;color:var(--gold-hi)">على حسب المساحة</small>';D('pOld').textContent='';D('pTag').innerHTML='';}
+  else{D('pPrice').innerHTML=fmt(priceFor(p,s))+'<small>درهم</small>';D('pOld').textContent=p.old?fmt(p.old)+' درهم':'';
+    D('pTag').innerHTML=p.real?'<span class="tbd ok">ثمن من الانستغرام</span>'+(p.gift?' <span class="note">+ زربية هدية</span>':''):T;}
+  if(s){D('oSize').value=s.join('x');}
+  updateWA();
+}
+function fillPanel(p){
+  current=p;
+  D('pImg').src='img/'+p.id+'.jpg';D('pImg').alt=p.ar;D('pImgBox').classList.remove('zoom');
+  const imgs=[p.id].concat(p.extra||[]);D('pThumbs').innerHTML='';
+  if(imgs.length>1)imgs.forEach((im,i)=>{const b=document.createElement('button');b.type='button';if(!i)b.className='on';b.innerHTML=`<img src="img/${im}.jpg" alt="">`;
+    b.onclick=()=>{D('pImg').src='img/'+im+'.jpg';D('pThumbs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');};D('pThumbs').appendChild(b);});
+  const room=ROOMS.find(r=>r.id===p.room);
+  D('pAcc').textContent=p.acc+' · '+room.n;
+  D('pTitle').innerHTML=p.ar+(p.realName?'':' '+T);
+  if(p.demo)D('pTitle').innerHTML+=' <span class="tbd">صورة توضيحية</span>';D('pFr').textContent=p.fr;D('pDesc').textContent=p.desc;
+  const sz=D('pSizes');sz.innerHTML='';const sel=D('oSize');sel.innerHTML='';
+  if(p.perM){D('pSizesLbl').textContent='القياس: على حسب المسجد، كنقيسو فالبلاصة';sel.innerHTML='<option value="على القياس">على القياس</option>';}
+  else if(!p.sizes){D('pSizesLbl').innerHTML='الطاي: مازال ما محددش '+T;sel.innerHTML='<option value="">نسول على الطاي</option>';}
+  else{D('pSizesLbl').innerHTML='اختار الطاي (سنتيمتر) '+(p.realName&&p.price?'':T);
+    p.sizes.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.textContent=s[0]+' × '+s[1];if(!i)b.classList.add('on');
+      b.onclick=()=>{sz.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderPrice(p,s);};sz.appendChild(b);
+      const o=document.createElement('option');o.value=s.join('x');o.textContent=s[0]+' × '+s[1];sel.appendChild(o);});}
+  D('pSpecs').innerHTML=`<dt>الرقم فالمعرض</dt><dd style="font-family:var(--f-mono)">${p.acc}</dd><dt>الزنقة</dt><dd>${room.ar}</dd><dt>الستيل</dt><dd>${p.style}</dd><dt>الألوان</dt><dd>${p.colors}</dd><dt>المادة</dt><dd>مازال ما محددة ${T}</dd><dt>التوصيل</dt><dd>لجميع مدن المغرب</dd>`;
+  D('pPhone').textContent=p.phone||'06 48 22 53 94';D('copied').hidden=true;
+  renderPrice(p,p.sizes?p.sizes[0]:null);
+  D('panel').scrollTop=0;
+}
+function updateWA(){
+  const p=current;if(!p)return;
+  const phone=(p.phone||'06 48 22 53 94').replace(/\s/g,'');
+  const size=D('oSize').value, qty=D('oQty').value||1, name=D('oName').value.trim(), city=D('oCity').value.trim();
+  const price=p.perM?'':(' | الثمن: '+fmt(priceFor(p,curSize))+' درهم');
+  const msg=`سلام دار الزرابي، بغيت نكوموندي:\n• ${p.ar} (${p.acc})\n• الطاي: ${size||'نسول'}\n• العدد: ${qty}${price}`+(name?`\n• السمية: ${name}`:'')+(city?`\n• المدينة: ${city}`:'');
+  D('waLink').href='https://wa.me/212'+phone.slice(1)+'?text='+encodeURIComponent(msg);
+}
+['oName','oCity','oQty'].forEach(id=>D(id).addEventListener('input',updateWA));
+D('oSize').addEventListener('change',()=>{const v=D('oSize').value;const s=current.sizes&&current.sizes.find(s=>s.join('x')===v);if(s){D('pSizes').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.textContent===s[0]+' × '+s[1]));renderPrice(current,s);}});
+D('orderForm').addEventListener('submit',e=>e.preventDefault());
+D('pImgBox').addEventListener('click',()=>D('pImgBox').classList.toggle('zoom'));
+D('pImgBox').addEventListener('mousemove',e=>{const r=D('pImgBox').getBoundingClientRect();D('pImg').style.transformOrigin=((e.clientX-r.left)/r.width*100)+'% '+((e.clientY-r.top)/r.height*100)+'%';});
+D('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(D('pPhone').textContent);D('copied').hidden=false;}catch(_){const r=document.createRange();r.selectNodeContents(D('pPhone'));const s=getSelection();s.removeAllRanges();s.addRange(r);}};
+
+/* ================= FALLBACK ================= */
+function noGL(){
+  D('nogl').hidden=false;D('veil').classList.add('gone');
+  PIECES.forEach(p=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<img src="img/${p.id}.jpg" alt=""><b style="font-family:var(--f-ar-display)">${p.ar}</b><br><small>${fromPrice(p)}</small>`;
+    b.onclick=()=>{fillPanel(p);D('panel').classList.add('open');};D('noglGrid').appendChild(b);});
+  D('nogl').style.zIndex=9;
+  D('closeBtn').onclick=()=>D('panel').classList.remove('open');
+}
+
+
+try{
+/* ================= WALKABLE ALLEYS (2.5D) ================= */
+/* Each photo is rebuilt as 3D geometry (floor, walls, far end, sky) from a hand-traced floor/wall line,
+   then textured with the photo itself seen from the spot it was taken. Walking moves a real camera through
+   that geometry, so walls and carpets slide past with true parallax. Between two photos the camera keeps
+   walking while the next photo's geometry, placed further down the street, takes over (Street View style). */
+const IW=1024, IH=576, FOC=760, EYE=1.6, DMAX=22, DSKY=70, DBACK=95;
+const GEO={
+  hero:{cy:290,j:[[0,775],[195,576],[250,520],[330,452],[400,402],[440,377],[475,357],[500,349],[530,346],[580,347],[600,352],[640,398],[700,432],[760,476],[800,520],[850,576],[1024,771]],
+        sky:[[430,-60],[436,96],[470,88],[548,66],[598,88],[606,-60]]},
+  fork:{cy:298,j:[[0,620],[60,540],[100,470],[130,420],[160,385],[190,362],[215,356],[228,360],[232,398],[270,425],[300,458],[340,485],[380,495],[420,485],[470,470],[520,466],[560,464],[600,457],[650,440],[700,418],[740,398],[758,388],[765,365],[790,360],[820,368],[850,385],[875,410],[900,440],[950,500],[1000,560],[1024,590]],
+        sky:[[108,-60],[118,60],[150,110],[190,150],[232,212],[236,40],[400,34],[500,66],[600,58],[700,128],[760,188],[800,172],[832,138],[862,78],[876,-60]]},
+  /* the square: one facade straight ahead (~13 m) with three arched passages */
+  fork3:{cy:368,j:[[0,459],[40,457],[100,460],[138,462],[936,462],[942,447],[1024,437]],sky:[[0,0],[1,0],[1,1]]}
+};
+const D2R=Math.PI/180;
+const QS=new URLSearchParams(location.search),GRID=(QS.get('grid')||'160,120').split(',').map(Number),GRIDC=QS.get('gridc')==='0'?null:(QS.get('gridc')||'80,60').split(',').map(Number),LODD=+(QS.get('lodd')||5.5);
+const NODES=[
+ {id:'main',img:'alley_hero_1.jpg',sky:'alley_hero_1.png',geo:'hero',room:'classique',pos:[0,0,0],yaw:0,slots:[
+   [[[664,160],[988,6],[992,512],[668,368]],'c13'],[[[-40,0],[162,98],[162,465],[-40,560]],'c27'],[[[220,128],[302,182],[306,425],[232,480]],'c35'],
+   [[[348,155],[412,200],[416,355],[356,378]],'c29'],[[[441,226],[466,238],[467,330],[445,338]],'c28'],[[[490,233],[512,240],[512,323],[492,326]],'c34']]},
+ {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0,0,-12],yaw:0,seam:[0.55,11],slots:[],
+  portals:[{to:'modern',side:'left',yb:462,poly:[[162,462],[163,320],[170,300],[172,285],[180,262],[190,248],[200,238],[212,230],[235,226],[260,223],[282,230],[300,240],[320,252],[333,262],[341,272],[346,284],[349,300],[350,320],[350,462]]},
+           {to:'bazaar',side:'center',yb:462,poly:[[412,462],[412,320],[413,303],[416,289],[424,275],[436,261],[450,249],[470,238],[490,229],[510,222],[530,229],[550,238],[570,251],[586,265],[598,279],[606,295],[610,309],[613,330],[614,462]]},
+           {to:'moquette',side:'right',yb:462,poly:[[675,462],[675,312],[679,283],[685,272],[695,260],[708,248],[725,237],[742,229],[758,222],[775,227],[792,233],[808,243],[822,255],[833,268],[843,282],[848,296],[850,320],[850,462]]}]},
+ {id:'modern',img:'alley_modern_a.jpg',sky:'alley_modern_a.png',geo:'hero',room:'moderne',slots:[
+   [[[664,158],[986,6],[990,520],[668,372]],'c18'],[[[-40,0],[162,98],[162,465],[-40,560]],'c02'],[[[220,128],[302,182],[306,425],[232,480]],'c12'],
+   [[[348,155],[412,200],[416,355],[356,378]],'c31'],[[[441,226],[466,238],[467,330],[445,338]],'c24'],[[[490,233],[512,240],[512,323],[492,326]],'c33']]},
+ {id:'bazaar',img:'alley_bazaar_b.jpg',sky:'alley_bazaar_b.png',geo:'hero',room:'bazaar',slots:[
+   [[[662,160],[985,8],[990,525],[665,375]],'bz4',{hot:1}],[[[0,15],[160,98],[160,465],[0,540]],'bz1',{hot:1}],
+   [[[210,125],[290,172],[292,450],[214,500]],'bz2',{hot:1}],[[[358,170],[410,198],[412,357],[360,382]],'bz3',{hot:1}],
+   [[[625,478],[745,478],[745,566],[625,566]],'c20',{hot:1,floor:1}]]},
+ {id:'moquette',img:'alley_moquette_b.jpg',sky:'alley_moquette_b.png',geo:'hero',room:'moquette',slots:[
+   [[[662,165],[985,8],[986,525],[668,370]],'mq3',{hot:1}],[[[-5,25],[163,96],[163,465],[-5,545]],'mq1',{hot:1}],
+   [[[212,130],[306,184],[309,425],[218,515]],'mq2',{hot:1}],[[[358,170],[412,198],[416,355],[362,380]],'c04']]}
+];
+const nodeById=Object.fromEntries(NODES.map(n=>[n.id,n]));
+
+/* ---------- geometry helpers ---------- */
+function junction(g,x){const j=g.j;if(x<=j[0][0]){const[a,b]=[j[0],j[1]];return a[1]+(x-a[0])*(b[1]-a[1])/(b[0]-a[0]);}
+  for(let i=1;i<j.length;i++){if(x<=j[i][0]){const a=j[i-1],b=j[i];return a[1]+(x-a[0])*(b[1]-a[1])/(b[0]-a[0]);}}
+  const a=j[j.length-2],b=j[j.length-1];return b[1]+(x-b[0])*(b[1]-a[1])/(b[0]-a[0]);}
+function inPoly(p,x,y){let c=false;for(let i=0,k=p.length-1;i<p.length;k=i++){const[xi,yi]=p[i],[xk,yk]=p[k];if(((yi>y)!==(yk>y))&&(x<(xk-xi)*(y-yi)/(yk-yi)+xi))c=!c;}return c;}
+function wallDepth(g,x){const yj=junction(g,x);return Math.min(FOC*EYE/Math.max(1,yj-g.cy),DMAX);}
+function depthAt(g,x,y,noSky){
+  if(!noSky&&inPoly(g.sky,x,y))return DSKY;
+  const yj=junction(g,x);
+  if(y>=yj)return Math.min(FOC*EYE/Math.max(1,y-g.cy),DMAX);
+  return wallDepth(g,x);
+}
+function ray(g,x,y,z){return new THREE.Vector3((x-IW/2)/FOC*z,-(y-g.cy)/FOC*z,-z);}
+
+/* ---------- three.js setup ---------- */
+const stage=D('stage');
+/* performance: everything is drawn straight to the screen in one pass per frame. Resolution follows a pixel budget and drops by
+   itself if a device can't keep up, and nothing is redrawn while the camera stands still. */
+const COARSE=matchMedia('(pointer:coarse)').matches,DPR0=devicePixelRatio||1,AA=DPR0<1.5&&!COARSE&&!/[?&]aa=0/.test(location.search);
+const renderer=new THREE.WebGLRenderer({antialias:AA,alpha:false,stencil:true,powerPreference:'high-performance'});
+const MAXRS=Math.min(DPR0,1.5),BUDGET=COARSE?1.25e6:2.3e6;let RS=1,rsCap=1,rsLock=false;
+renderer.setPixelRatio(1);renderer.setClearColor(0x000000,0);renderer.autoClear=false;
+D('world').appendChild(renderer.domElement);renderer.domElement.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block';
+const camera=new THREE.PerspectiveCamera(40,1,0.05,400);camera.rotation.order='YXZ';
+let dirty=3;const poke=()=>{dirty=Math.max(dirty,2);};
+const loader=new THREE.TextureLoader();
+/* textures go to the GPU (with mipmaps) as soon as they arrive, so the first look at a new alley never stalls */
+function loadTex(url,cb){const t=loader.load(url,()=>{try{renderer.initTexture(t);}catch(e){}poke();cb&&cb();});return t;}
+const compCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+/* same vignette for the direct path, as one multiply pass */
+const vig=new THREE.ShaderMaterial({vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',
+  fragmentShader:'varying vec2 vUv;void main(){vec2 q=vUv-.5;gl_FragColor=vec4(vec3(1.-dot(q,q)*.55),1.);}',
+  depthTest:false,depthWrite:false,transparent:true,blending:THREE.CustomBlending,blendEquation:THREE.AddEquation,blendSrc:THREE.ZeroFactor,blendDst:THREE.SrcColorFactor});
+const vigScene=new THREE.Scene();vigScene.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(2,2),vig));
+
+/* every photo surface uses this material: it also writes how much of it should stay visible
+   when the next street segment (beyond a "seam" plane fixed in the world) takes over */
+const SEAM={seamOn:{value:0},seamP:{value:new THREE.Vector3()},seamN:{value:new THREE.Vector3(0,0,-1)},seamS:{value:0},floorS:{value:-99},feather:{value:0.45},roleB:{value:0},fadeA:{value:1}};
+let MATS=null,GCY=290;
+const SKYP=loadTex('img/sky/plate.jpg');SKYP.wrapS=SKYP.wrapT=THREE.ClampToEdgeWrapping;
+function photoMat(tex,tint,apron,skyM,mirror){const df={};if(apron)df.APRON=1;if(skyM)df.SKY=1;if(mirror)df.MIRROR=1;
+  const mm=new THREE.ShaderMaterial({defines:df,uniforms:Object.assign({map:{value:tex},tint:{value:new THREE.Color(tint||0xffffff)},skyM:{value:skyM||null},skyP:{value:SKYP},gcy:{value:GCY},gd0:{value:FOC*EYE/(IH-GCY)}},SEAM),
+  vertexShader:'varying vec2 vUv;varying vec3 vW,vL;varying float vFb;\n#ifdef APRON\nattribute float fb;\n#endif\nvoid main(){vUv=uv;vL=position;\n#ifdef APRON\nvFb=fb;\n#else\nvFb=0.;\n#endif\nvec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
+  fragmentShader:`uniform sampler2D map,skyM,skyP;uniform vec3 tint;uniform float seamOn,seamS,floorS,feather,roleB,gcy,gd0,fadeA;varying vec3 vL;uniform vec3 seamP,seamN;varying vec2 vUv;varying vec3 vW;varying float vFb;
+    void main(){
+      #ifdef MIRROR
+      vec4 c=texture2D(map,vUv);
+      #else
+      vec2 o=max(-vUv,vUv-1.);float ou=max(o.x,o.y);vec4 c=ou>0.?texture2D(map,clamp(vUv,.0005,.9995),min(ou*90.,9.)):texture2D(map,vUv);
+      #endif
+      #ifdef APRON
+      /* ground nearer than the photo's bottom edge: rebuilt from the photo's own paving, sampled in true ground
+         coordinates (repeating every 2.4 m, two offset copies cross-faded so no seam line shows) */
+      if(vL.y<-1.55){float D=max(.3,-vL.z),X=vL.x;if(D<gd0){float P=2.4,q=(gd0-D)/P,f1=fract(q),f2=fract(q+.5);
+        float D1=gd0+.05+f1*P,D2=gd0+.05+f2*P;
+        vec2 u1=vec2(.5+X*.7421875/D1,1.-(gcy+1216./D1)/576.),u2=vec2(.5+X*.7421875/D2,1.-(gcy+1216./D2)/576.);
+        float w1=1.-abs(f1*2.-1.),w2=1.-abs(f2*2.-1.);
+        vec3 gr=(texture2D(map,u1).rgb*w1+texture2D(map,u2).rgb*w2)/(w1+w2);
+        float Dm=2.*gd0-D;vec3 gm=texture2D(map,vec2(.5+X*.7421875/Dm,1.-(gcy+1216./Dm)/576.)).rgb;  /* mirrored about the photo's edge: continuous there */
+        c.rgb=mix(gm,gr,smoothstep(.45*P,P,gd0-D));}}
+      #endif
+      #ifdef SKY
+      /* open sky is drawn at infinity (same for every photo), so roof lines stay sharp and never smear */
+      float sk=texture2D(skyM,clamp(vUv,.001,.999)).r;if(sk>.02){vec3 dr=normalize(vW-cameraPosition);float iz=1./max(.05,-dr.z);
+        vec3 s=texture2D(skyP,vec2(.5+.7421875*dr.x*iz,1.-(.50347-1.3194*dr.y*iz))).rgb;c.rgb=mix(c.rgb,s/max(tint,vec3(.01)),smoothstep(.3,.7,sk));}
+      #endif
+      float keep=1.;if(seamOn>.5){float dd=dot(vW-seamP,seamN);keep=1.-smoothstep(-feather,feather,dd-seamS);
+        /* the paving underfoot stays until the next photo's own ground begins: no smeared floor in between */
+        if(vW.y<-1.52)keep=max(keep,1.-smoothstep(-feather,feather,dd-floorS));}
+      float din=min(min(vUv.x,1.-vUv.x),1.-vUv.y);float ef=smoothstep(-.24,.09,din)*(1.-smoothstep(.6,1.,vFb));
+      float al=seamOn>.5?keep*fadeA:(roleB>.5?ef:1.);gl_FragColor=vec4(c.rgb*tint,al);}`});if(MATS)MATS.push(mm);return mm;}
+/* build one photo node as a 3D group */
+function buildNode(n){
+  MATS=n.mats=[];const g=GEO[n.geo];GCY=g.cy;const grp=new THREE.Group();const scene=new THREE.Scene();scene.add(grp);
+  const tex=loadTex('img/'+n.img,()=>{n.ready=true;});tex.minFilter=THREE.LinearMipmapLinearFilter;tex.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
+  tex.wrapS=tex.wrapT=n.mirror?THREE.MirroredRepeatWrapping:THREE.ClampToEdgeWrapping;
+  let skyM=null;if(n.sky){skyM=loadTex('img/sky/'+n.sky);skyM.minFilter=THREE.LinearFilter;skyM.generateMipmaps=false;}
+  /* backdrop: the whole photo on a far plane, fills any gap the near mesh leaves when we move */
+  {const m=0.35,x0=-m*IW,x1=(1+m)*IW,y0=-m*IH,y1=(1+m)*IH;const geo=new THREE.BufferGeometry();
+   const P=[ray(g,x0,y0,DBACK),ray(g,x1,y0,DBACK),ray(g,x1,y1,DBACK),ray(g,x0,y1,DBACK)];
+   geo.setAttribute('position',new THREE.Float32BufferAttribute(P.flatMap(p=>[p.x,p.y,p.z]),3));
+   geo.setAttribute('uv',new THREE.Float32BufferAttribute([x0/IW,1-y0/IH,x1/IW,1-y0/IH,x1/IW,1-y1/IH,x0/IW,1-y1/IH],2));geo.setIndex([0,3,1,1,3,2]);
+   const bmm=photoMat(tex,0xffffff,false,skyM,n.mirror);bmm.depthWrite=false;const bm=new THREE.Mesh(geo,bmm);bm.renderOrder=1;grp.add(bm);}
+  /* displaced grid: a fine one for walking inside, a coarse one for when the alley is only seen far off through an arch */
+  const mkGrid=(GW,GH)=>{const m=0.25,mb=1.2;const pos=[],uv=[],dz=[],fb=[];
+  for(let j=0;j<=GH;j++)for(let i=0;i<=GW;i++){
+    const u=-m+(1+2*m)*i/GW,v=-m+(1+m+mb)*j/GH;const x=u*IW,y=v*IH;const z=depthAt(g,x,y,!!n.sky);const p=ray(g,x,y,z);
+    let vt=v;if(v>1){const k=(v-1)/0.14,f=k%1;vt=1-0.14*((Math.floor(k)%2===0)?f:1-f);}
+    pos.push(p.x,p.y,p.z);uv.push(u,1-vt);dz.push(z);fb.push(v>1?Math.min(1,(v-1)/1.1):0);}
+  const idx=[];const W=GW+1;const ok=(a,b,c)=>{const zs=[dz[a],dz[b],dz[c]];return Math.max(...zs)/Math.min(...zs)<1.45;};
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const a=j*W+i,b=a+1,c=a+W,d=c+1;if(ok(a,c,b))idx.push(a,c,b);if(ok(b,c,d))idx.push(b,c,d);}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('fb',new THREE.Float32BufferAttribute(fb,1));geo.setIndex(idx);return geo;};
+  const gmat=photoMat(tex,0xffffff,true,skyM,n.mirror);const geo=mkGrid(GRID[0],GRID[1]);
+  n.fine=new THREE.Mesh(geo,gmat);grp.add(n.fine);n.gridGeo=geo;
+  if(n.viaPortal&&GRIDC){n.coarse=new THREE.Mesh(mkGrid(GRIDC[0],GRIDC[1]),gmat);n.coarse.visible=false;grp.add(n.coarse);}
+  /* carpets: real Dar Zarabi photos placed on the wall planes */
+  n.rugs=[];
+  (n.slots||[]).forEach(([q,id,opt])=>{
+    const hot=opt&&opt.hot;const p=pieceById[id];
+    let qq=q;if(!hot){const mx=(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,my=(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4;qq=q.map(([x,y])=>[mx+(x-mx)*1.05,my+(y-my)*1.04]);}
+    const V=qq.map(([x,y])=>ray(g,x,y,(opt&&opt.floor)?depthAt(g,x,y)*0.97:wallDepth(g,x)*0.985));
+    const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(V.flatMap(v=>[v.x,v.y,v.z]),3));
+    gg.setAttribute('uv',new THREE.Float32BufferAttribute([0,1,1,1,1,0,0,0],2));gg.setIndex([0,3,1,1,3,2]);
+    let mat;
+    if(hot){mat=new THREE.MeshBasicMaterial({color:0xfff0d6,transparent:true,opacity:0,depthWrite:false});n.mats.push(mat);}
+    else{const t=loadTex('img/w/'+id+'.jpg');t.minFilter=THREE.LinearMipmapLinearFilter;t.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
+      mat=photoMat(t,0xeeeae4);mat.color=mat.uniforms.tint.value;}
+    const mesh=new THREE.Mesh(gg,mat);mesh.userData={piece:p,hot,node:n};grp.add(mesh);
+    const c=V.reduce((a,v)=>a.add(v),new THREE.Vector3()).multiplyScalar(.25);const bot=V[2].clone().lerp(V[3],.5);
+    n.rugs.push({mesh,piece:p,hot,center:c,bottom:bot});
+  });
+  /* place node in the world */
+  grp.position.set(...n.pos);grp.rotation.y=(n.yaw||0)*D2R;grp.updateMatrixWorld(true);
+  n.grp=grp;n.scene=scene;n.vfov0=2*Math.atan(IH/2/FOC)/D2R;n.pitch=Math.atan((g.cy-IH/2)/FOC)/D2R;n.floor0=FOC*EYE/(IH-g.cy);MATS=null;
+}
+const pieceById=Object.fromEntries(PIECES.map(p=>[p.id,p]));
+/* ---------- the square: each arched passage in the facade is a window into the next alley ----------
+   Through an arch you see the next alley's own 3D (stencil portal), so it already has real depth and parallax
+   before you reach it, and walking through the arch simply carries you into it: nothing swaps on screen. */
+const FORK='fork';const FK=nodeById[FORK];const BACK=3.0;
+const fkMat=new THREE.Matrix4().makeRotationY((FK.yaw||0)*D2R).setPosition(...FK.pos);
+const PORTALS=(FK.portals||[]).map((pt,i)=>{
+  const g=GEO[FK.geo];const xs=pt.poly.map(p=>p[0]),ys=pt.poly.map(p=>p[1]);
+  const cx=pt.cx||(Math.min(...xs)+Math.max(...xs))/2,yb=pt.yb||Math.max(...ys),yt=Math.min(...ys);
+  const dep=pt.depth||FOC*EYE/(yb-g.cy);
+  const loc=pt.poly.map(([x,y])=>ray(g,x,y,dep));
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(loc.flatMap(v=>[v.x,v.y,v.z]),3));
+  const tri=THREE.ShapeUtils.triangulateShape(pt.poly.map(([x,y])=>new THREE.Vector2(x,-y)),[]);geo.setIndex(tri.flat());geo.computeBoundingSphere();
+  const R=THREE.ReplaceStencilOp;
+  const mat=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false,depthTest:false,side:THREE.DoubleSide,
+    stencilWrite:true,stencilRef:i+1,stencilFunc:THREE.AlwaysStencilFunc,stencilZPass:R,stencilFail:R,stencilZFail:R});
+  const mesh=new THREE.Mesh(geo,mat);mesh.matrixAutoUpdate=false;mesh.matrix.copy(fkMat);mesh.updateMatrixWorld(true);
+  const scene=new THREE.Scene();scene.add(mesh);const world=loc.map(v=>v.clone().applyMatrix4(fkMat));
+  const ctr=ray(g,cx,yb,dep).applyMatrix4(fkMat),top=ray(g,cx,yt,dep).applyMatrix4(fkMat);
+  const X=nodeById[pt.to];X.viaPortal=true;X.pos=[ctr.x+(pt.dx||0),0,ctr.z+BACK];X.yaw=FK.yaw||0;
+  return {i,to:pt.to,side:pt.side,mesh,scene,world,ctr,top,zf:ctr.z};
+});
+NODES.forEach(buildNode);
+
+/* ---------- walking paths ---------- */
+const TAIL=6;
+function fwdOf(yaw){return new THREE.Vector3(-Math.sin(yaw*D2R),0,-Math.cos(yaw*D2R));}
+const sstep=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
+const smoother=t=>{t=Math.min(1,Math.max(0,t));return t*t*t*(t*(t*6-15)+10);};
+function mkEdge(id,a,b,fn,tail){const N=240,lut=[0];let prev=fn(0).p,L=0;for(let i=1;i<=N;i++){const q=fn(i/N).p;L+=q.distanceTo(prev);prev=q;lut.push(L);}
+  return {id,a,b,fn,L,lut,N,tail};}
+const EDGES={};
+{const A=new THREE.Vector3(...nodeById.main.pos),B=new THREE.Vector3(...FK.pos);const pA=nodeById.main.pitch,pB=FK.pitch;
+ EDGES[FORK]=mkEdge(FORK,'main',FORK,t=>({p:A.clone().lerp(B,t),yaw:0,pitch:pA+(pB-pA)*sstep(0.25,1,t)}),0);EDGES[FORK].seam=FK.seam||[0.55,10];}
+/* square -> arch: drift sideways towards the chosen arch while walking, head turned a little towards it,
+   then pass straight through the middle of the arch */
+const TURNK=FK.turnK||0.4;
+PORTALS.forEach(pt=>{const P0=new THREE.Vector3(...FK.pos);const zE=pt.zf-0.6,ax=pt.ctr.x,LZ=P0.z-zE;
+  const pos=t=>new THREE.Vector3(P0.x+(ax-P0.x)*smoother(t/0.78),0,P0.z-LZ*t);
+  const pF=FK.pitch,pX=nodeById[pt.to].pitch;
+  const fn=t=>{const q=pos(Math.min(1,t+0.002)),r=pos(Math.max(0,t-0.002));return {p:pos(t),yaw:TURNK*Math.atan2(-(q.x-r.x),-(q.z-r.z))/D2R,pitch:pF+(pX-pF)*sstep(0.05,0.85,t)};};
+  EDGES[pt.to]=mkEdge(pt.to,FORK,pt.to,fn,TAIL);EDGES[pt.to].portal=pt;});
+function arcT(e,s){const lut=e.lut,target=Math.max(0,Math.min(e.L,s));let lo=0,hi=e.N;while(hi-lo>1){const m=(lo+hi)>>1;if(lut[m]<target)lo=m;else hi=m;}
+  const a=lut[lo],b=lut[hi];return (lo+(b>a?(target-a)/(b-a):0))/e.N;}
+function camAt(eid,s){const e=EDGES[eid];
+  if(s<=e.L){const t=arcT(e,s),r=e.fn(t);return {p:r.p,yaw:r.yaw,pitch:r.pitch||0,t};}
+  const r=e.fn(1);return {p:r.p.clone().add(fwdOf(r.yaw).multiplyScalar(s-e.L)),yaw:r.yaw,pitch:r.pitch||0,t:1};}
+/* draw one place; in the square also draw every visible arch with its alley seen through it.
+   Order: arch masks (stencil only) -> the square everywhere except inside the arches -> each alley, clipped to
+   its arch's on-screen box, so no pixel is shaded twice. */
+const pm=new THREE.Matrix4(),v4=new THREE.Vector4(),tv3=new THREE.Vector3(),FULL=[0,0,1,1];
+function screenRect(pts,pad){let x0=2,y0=2,x1=-2,y1=-2;
+  for(const p of pts){v4.set(p.x,p.y,p.z,1).applyMatrix4(pm);if(v4.w<0.06)return FULL;const x=v4.x/v4.w,y=v4.y/v4.w;
+    if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+  x0=(x0+1)/2-pad;x1=(x1+1)/2+pad;y0=(y0+1)/2-pad;y1=(y1+1)/2+pad;
+  if(x1<=0||y1<=0||x0>=1||y0>=1)return null;return [Math.max(0,x0),Math.max(0,y0),Math.min(1,x1),Math.min(1,y1)];}
+function scissor(rt,r){
+  if(rt){if(r){const w=rt.width,h=rt.height,x=Math.floor(r[0]*w),y=Math.floor(r[1]*h);rt.scissor.set(x,y,Math.ceil(r[2]*w)-x,Math.ceil(r[3]*h)-y);rt.scissorTest=true;}else rt.scissorTest=false;renderer.setRenderTarget(rt);}
+  else{renderer.setRenderTarget(null);if(r){const x=Math.floor(r[0]*W),y=Math.floor(r[1]*H);renderer.setScissor(x,y,Math.ceil(r[2]*W)-x,Math.ceil(r[3]*H)-y);renderer.setScissorTest(true);}else renderer.setScissorTest(false);}}
+function stencilMode(n,ref){const on=ref>=0;n.mats.forEach(m=>{m.stencilWrite=on;m.stencilRef=on?ref:0;m.stencilFunc=THREE.EqualStencilFunc;m.stencilFail=m.stencilZFail=m.stencilZPass=THREE.KeepStencilOp;});}
+function drawNode(rt,n,keep){
+  scissor(rt,null);if(!keep)renderer.clear(true,true,true);
+  if(n!==FK){renderer.render(n.scene,camera);return;}
+  const vis=[];PORTALS.forEach(pt=>{const r=screenRect(pt.world,0.004);if(r)vis.push([pt,r]);});
+  vis.forEach(([pt])=>renderer.render(pt.scene,camera));
+  stencilMode(FK,vis.length?0:-1);renderer.render(FK.scene,camera);stencilMode(FK,-1);
+  vis.forEach(([pt,r])=>{scissor(rt,r);const X=nodeById[pt.to];const far=X.coarse&&camera.position.distanceTo(pt.ctr)>LODD;if(far){X.fine.visible=false;X.coarse.visible=true;}
+    stencilMode(X,pt.i+1);renderer.render(X.scene,camera);stencilMode(X,-1);if(far){X.fine.visible=true;X.coarse.visible=false;}});
+  scissor(rt,null);}
+/* depth pre-pass: the first alley's walls and floor that are still fully kept, written into the square's buffer
+   first, so every square pixel hidden behind them is rejected before it is shaded */
+const PRE=new THREE.ShaderMaterial({uniforms:SEAM,colorWrite:false,
+  vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
+  fragmentShader:'uniform vec3 seamP,seamN;uniform float seamS,feather;varying vec3 vW;void main(){if(dot(vW-seamP,seamN)-seamS>-feather)discard;gl_FragColor=vec4(0.);}'});
+let preScene=null;nodeById.main.mats.forEach(m=>{m.transparent=true;});
+{const mn=nodeById.main;preScene=new THREE.Scene();const pm0=new THREE.Mesh(mn.gridGeo,PRE);pm0.matrixAutoUpdate=false;pm0.matrix.copy(mn.grp.matrixWorld);pm0.updateMatrixWorld(true);preScene.add(pm0);}
+
+/* state */
+let mode='intro',focus=null,edge='fork',s=0,sT=0,auto=null,lastRoom=undefined,lookX=0,lookT=0,lookY=0,stepPhase=0,lastT=performance.now(),pendMove=null,SR={left:0,top:0,width:1,height:1};
+function atFork(){return (edge===FORK&&s>EDGES[FORK].L-0.6)||(edge!==FORK&&s<0.6);}
+function clampS(){const e=EDGES[edge];const max=e.L+e.tail;if(sT>max)sT=max;if(sT<0){if(edge!==FORK){edge=FORK;s+=EDGES[FORK].L;sT+=EDGES[FORK].L;}else sT=0;}}
+function push(d){if(auto||mode!=='walk')return;
+  if(edge===FORK&&sT+d>EDGES[FORK].L){sT=EDGES[FORK].L;if(d>0)nudgeSigns();return;}
+  sT+=d;clampS();}
+/* walk automatically along a route of edges (used by signposts, rail, end buttons) */
+function walkTo(target,targetS){
+  const route=[];
+  if(edge!==FORK&&target!==edge){route.push([edge,0]);route.push([FORK,EDGES[FORK].L]);}
+  if(target===FORK){route.push([FORK,targetS??EDGES[FORK].L]);}
+  else{if(edge===FORK)route.push([FORK,EDGES[FORK].L]);route.push([target,targetS??EDGES[target].L]);}
+  auto={route,i:0};hideEnd();poke();
+}
+function stepAuto(dt){
+  const leg=auto.route[auto.i];if(!leg){auto=null;poke();return;}
+  if(leg[0]!==edge){/* switch at the fork */ if(edge===FORK&&Math.abs(s-EDGES[FORK].L)<0.05){edge=leg[0];s=sT=0;}else if(edge!==FORK&&s<0.05&&leg[0]===FORK){edge=FORK;s=sT=EDGES[FORK].L;}}
+  const dist=leg[1]-s;const v=Math.min(2.6,0.6+Math.abs(dist)*0.9);const ds=Math.sign(dist)*Math.min(Math.abs(dist),v*dt);
+  s+=ds;sT=s;if(Math.abs(leg[1]-s)<0.02){s=sT=leg[1];auto.i++;if(auto.i>=auto.route.length){auto=null;poke();}}
+}
+
+/* ---------- input ---------- */
+stage.addEventListener('wheel',e=>{e.preventDefault();if(mode==='focus'){closePiece();return;}if(mode!=='walk')return;push(e.deltaY*0.012);},{passive:false});
+let drag=null;
+stage.addEventListener('pointerdown',e=>{if(e.target.closest('.sign,.end-ovl'))return;drag={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,moved:0,look:lookT};});
+addEventListener('pointermove',e=>{
+  if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved=Math.max(drag.moved,Math.hypot(dx,dy));if(mode!=='walk')return;
+    push((e.clientY-drag.ly)*0.03);drag.ly=e.clientY;lookT=Math.max(-12,Math.min(12,drag.look+dx*0.08));}
+  else if(e.pointerType==='mouse'&&mode==='walk'){lookT=-(e.clientX/innerWidth-.5)*6;pendMove={clientX:e.clientX,clientY:e.clientY};}
+});
+addEventListener('pointerup',e=>{const d=drag;drag=null;if(!d||d.moved>6)return;
+  if(mode==='focus'){if(!e.target.closest('#panel'))closePiece();return;}
+  if(mode==='walk'&&!e.target.closest('.sign,.end-ovl,.hud,#panel,.hud-top,.rail-wrap')){const hit=pick(e.clientX,e.clientY);if(hit){openPiece(hit.piece);return;}
+    const arch=pickArch(e.clientX,e.clientY);if(arch&&!auto){D('tip').classList.remove('show');walkTo(arch.to);}}
+});
+addEventListener('keydown',e=>{
+  if(e.target.closest&&e.target.closest('input,select,textarea'))return;
+  if(mode==='intro'&&e.key==='Enter'){enter();return;}
+  if(mode==='walk'){
+    if(['ArrowUp','w','W'].includes(e.key)){step(1);e.preventDefault();}
+    if(['ArrowDown','s','S'].includes(e.key)){step(-1);e.preventDefault();}
+    if(atFork()&&!auto){const k={ArrowLeft:'left',ArrowRight:'right'}[e.key];const br=k&&PORTALS.find(b=>b.side===k);if(br){walkTo(br.to);e.preventDefault();}}
+  }else if(mode==='focus'&&e.key==='Escape')closePiece();
+});
+function step(d){if(mode==='focus')closePiece();if(mode==='intro')return enter();push(d*1.6);}
+D('fwdBtn').onclick=()=>step(1);D('backStep').onclick=()=>step(-1);
+
+/* picking */
+const rc=new THREE.Raycaster(),ndc=new THREE.Vector2();
+let visNode=null,hoverRug=null;
+function pick(x,y){if(!visNode)return null;const r=SR;ndc.set((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1);rc.setFromCamera(ndc,camera);
+  const hits=rc.intersectObjects(visNode.rugs.map(r=>r.mesh),false);return hits.length?hits[0].object.userData:null;}
+function pickArch(x,y){if(visNode!==FK)return null;const r=SR;ndc.set((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1);rc.setFromCamera(ndc,camera);
+  const hits=rc.intersectObjects(PORTALS.map(p=>p.mesh),false);return hits.length?PORTALS.find(p=>p.mesh===hits[0].object):null;}
+function hover(e){const h=pick(e.clientX,e.clientY);setHover(h);const ar=!h&&!auto?pickArch(e.clientX,e.clientY):null;
+  if(ar){const rm=ROOMS.find(x=>x.id===nodeById[ar.to].room);D('tipT').textContent=rm.ar;D('tipP').textContent='دخل للزنقة';D('tip').style.left=e.clientX+'px';D('tip').style.top=e.clientY+'px';D('tip').classList.add('show');stage.style.cursor='pointer';return;}
+  if(h){D('tipT').textContent=h.piece.ar;D('tipP').textContent=fromPrice(h.piece);D('tip').style.left=e.clientX+'px';D('tip').style.top=e.clientY+'px';D('tip').classList.add('show');stage.style.cursor='pointer';}
+  else{D('tip').classList.remove('show');stage.style.cursor='';}}
+function hits0(h){return visNode.rugs.find(r=>r.mesh.userData===h)?.mesh;}
+function setHover(h){const m=h?hits0(h):null;if(m===hoverRug)return;poke();
+  if(hoverRug){const u=hoverRug.userData;if(u.hot)hoverRug.material.opacity=0;else hoverRug.material.color.set(focus&&focus===u.piece?0xffffff:0xeeeae4);}
+  hoverRug=m;if(m){if(m.userData.hot)m.material.opacity=0.13;else m.material.color.set(0xffffff);}}
+
+/* signposts at the fork (screen space) */
+const ovl=D('ovl');const signs=PORTALS.map(br=>{
+  const r=ROOMS.find(x=>x.id===nodeById[br.to].room);const b=document.createElement('button');b.type='button';b.className='sign';b.innerHTML=`<i></i><span>${r.n}</span><b>${r.ar}</b>`;
+  b.onclick=e=>{e.stopPropagation();if(mode==='focus')closePiece();walkTo(br.to);};ovl.appendChild(b);
+  const loc=br.top.clone().add(new THREE.Vector3(0,0.55,0));return {br,b,loc};});
+function nudgeSigns(){signs.forEach(s=>{s.b.classList.remove('nudge');void s.b.offsetWidth;s.b.classList.add('nudge');});}
+/* carpet markers */
+const dots=[];NODES.forEach(n=>n.rugs.forEach(r=>{const d=document.createElement('span');d.className='dot3';ovl.appendChild(d);const w=r.bottom.clone();n.grp.localToWorld(w);dots.push({n,r,d,w});}));
+
+/* end of an alley */
+function showEnd(){const cur=nodeById[edge];if(!cur||edge===FORK)return;const others=PORTALS.filter(b=>b.to!==edge);
+  D('endLinks').innerHTML='';others.forEach(b=>{const r=ROOMS.find(x=>x.id===nodeById[b.to].room);const btn=document.createElement('button');btn.type='button';btn.className='ghost';btn.textContent=r.ar;
+    btn.onclick=()=>{hideEnd();walkTo(b.to);};D('endLinks').appendChild(btn);});D('endCard').classList.add('show');}
+function hideEnd(){D('endCard').classList.remove('show');}
+D('endBack').onclick=()=>{hideEnd();walkTo(FORK);};
+
+/* rail */
+const railEl=D('rail'),railBtns=[];
+ROOMS.forEach((r,i)=>{const n=NODES.find(x=>x.room===r.id);const b=document.createElement('button');b.type='button';b.innerHTML=`<i></i><span>${r.ar}</span>`;b.style.right=(i/(ROOMS.length-1)*100)+'%';
+  b.onclick=()=>{if(mode==='intro')enter();if(mode==='focus')closePiece();if(n.id==='main')walkTo(FORK,0);else walkTo(n.id);};railEl.appendChild(b);railBtns.push({b,r});});
+
+/* panel */
+const order=NODES.flatMap(n=>(n.slots||[]).map(x=>pieceById[x[1]]));
+function openPiece(p){mode='focus';focus=p;poke();document.body.classList.add('focus');D('tip').classList.remove('show');hideEnd();
+  NODES.forEach(n=>n.rugs.forEach(r=>{if(r.hot)r.mesh.material.opacity=r.piece===p?0.16:0;else r.mesh.material.color.set(r.piece===p?0xffffff:0xeeeae4);}));
+  fillPanel(p);D('panel').classList.add('open');D('panel').setAttribute('aria-hidden','false');history.replaceState(null,'','#piece-'+p.id);}
+function closePiece(){if(mode!=='focus')return;mode='walk';poke();focus=null;document.body.classList.remove('focus');
+  NODES.forEach(n=>n.rugs.forEach(r=>{if(r.hot)r.mesh.material.opacity=0;else r.mesh.material.color.set(0xeeeae4);}));
+  D('panel').classList.remove('open');D('panel').setAttribute('aria-hidden','true');history.replaceState(null,'',location.pathname+location.search);}
+D('closeBtn').onclick=closePiece;
+const stepPiece=d=>{const i=order.indexOf(focus);openPiece(order[(i+d+order.length)%order.length]);};
+D('nextBtn').onclick=()=>stepPiece(1);D('prevBtn').onclick=()=>stepPiece(-1);
+function enter(){if(mode!=='intro')return;D('veil').classList.add('gone');mode='walk';poke();sT=Math.max(sT,0.9);
+  const h=location.hash.match(/^#piece-(\w+)/);if(h&&pieceById[h[1]])setTimeout(()=>openPiece(pieceById[h[1]]),900);}
+D('enterBtn').onclick=enter;
+D('loading').textContent='';
+
+/* ---------- frame ---------- */
+let W=0,H=0;
+let fillD=1.6;
+function resize(){const r=stage.getBoundingClientRect();SR={left:r.left,top:r.top,width:Math.max(1,r.width),height:Math.max(1,r.height)};W=SR.width;H=SR.height;
+  RS=Math.max(0.6,Math.min(MAXRS,Math.sqrt(BUDGET/(W*H)))*rsCap);
+  renderer.setPixelRatio(RS);renderer.setSize(W,H,false);
+  const a=W/H,pa=IW/IH;camera.aspect=a;camera.fov=a>=pa?2*Math.atan((IW/2/FOC)/a)/D2R:2*Math.atan(IH/2/FOC)/D2R;camera.updateProjectionMatrix();
+  /* how close to an arch before it frames the whole screen (then the room name switches) */
+  const tv=Math.tan(camera.fov*D2R/2),th=tv*a;fillD=Math.max(1.6,Math.min(1.55/th,2.4/Math.tan(Math.atan(tv)+0.1)));poke();}
+addEventListener('resize',resize);resize();
+/* compile every shader and touch both buffers now, while the intro is showing, instead of mid-walk */
+try{NODES.forEach(n=>renderer.compile(n.scene,camera));PORTALS.forEach(pt=>renderer.compile(pt.scene,camera));renderer.compile(preScene,camera);renderer.compile(vigScene,compCam);}catch(e){}
+const tmp=new THREE.Vector3(),tmp2=new THREE.Vector3(),prevP=new THREE.Vector3();const SEAMNOW={on:false,p:new THREE.Vector3(),n:new THREE.Vector3(),s:0};
+const lastPose=new Float64Array(6).fill(1e9);let lastRendered=false,fEma=16.7,fN=0,goodN=0,coolUntil=0,lastDrop=-1e9;
+const FINFO={calls:0,tris:0,path:'',n:0};renderer.info.autoReset=false;
+let endShown=false;
+function frame(now){
+  now=now||performance.now();const fd=now-lastT;const dt=Math.min(0.05,fd/1000);lastT=now;
+  if(auto)stepAuto(dt);else{const ds=(sT-s);if(Math.abs(ds)<2e-4)s=sT;else{const v=Math.max(-3.2*dt,Math.min(3.2*dt,ds*Math.min(1,dt*3.2)));s+=v;}}
+  if(mode==='intro'){sT=s=0;}
+  lookX+=(lookT-lookX)*Math.min(1,dt*4);if(Math.abs(lookT-lookX)<2e-3)lookX=lookT;
+  if(pendMove){hover(pendMove);pendMove=null;}
+  const c=camAt(edge,s);const speed=c.p.distanceTo(prevP);prevP.copy(c.p);
+  /* walking: a gentle step rhythm that fades in only while moving */
+  stepPhase+=speed*Math.PI/0.72;const amp=Math.min(1,speed/(dt||1)/1.4);
+  const bob=Math.sin(stepPhase)*0.022*amp, sway=Math.cos(stepPhase*0.5)*0.012*amp;
+  camera.position.set(c.p.x+sway*Math.cos(c.yaw*D2R),bob,c.p.z-sway*Math.sin(c.yaw*D2R));
+  camera.rotation.set(c.pitch*D2R,(c.yaw+lookX)*D2R,Math.cos(stepPhase*0.5)*0.0025*amp);
+  /* nothing moved and nothing changed: skip drawing entirely */
+  const P=[camera.position.x,camera.position.y,camera.position.z,camera.rotation.x,camera.rotation.y,camera.rotation.z];
+  let moved=false;for(let i=0;i<6;i++)if(Math.abs(P[i]-lastPose[i])>(i<3?1e-4:2e-5)){moved=true;break;}
+  if(!moved&&dirty<=0){lastRendered=false;requestAnimationFrame(frame);return;}
+  if(dirty>0)dirty--;for(let i=0;i<6;i++)lastPose[i]=P[i];
+  /* adaptive resolution: watch the real frame rate while moving */
+  if(lastRendered&&!rsLock&&document.visibilityState==='visible'){fEma+=(fd-fEma)*0.12;fN++;
+    if(fN>18&&fEma>26&&now>coolUntil&&rsCap>0.42){rsCap=Math.max(0.42,rsCap*0.8);lastDrop=now;coolUntil=now+1500;fN=0;fEma=16.7;resize();}
+    else if(fEma<18){if(++goodN>300&&rsCap<1&&now-lastDrop>12000){rsCap=Math.min(1,rsCap*1.12);goodN=0;fN=0;resize();}}else goodN=0;}
+  camera.updateMatrixWorld();pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
+  renderer.info.reset();
+  let A,B=null;
+  if(edge===FORK){A=c.t<1?nodeById.main:FK;
+    if(c.t<1){const e=EDGES[edge];SEAM.seamP.value.set(...FK.pos);SEAM.seamN.value.copy(fwdOf(FK.yaw||0));
+      SEAM.seamS.value=c.t<e.seam[0]?e.seam[1]*(1-sstep(0,e.seam[0],c.t)):-1.6*(c.t-e.seam[0])/(1-e.seam[0]);
+      B=FK;}}
+  else{const pt=EDGES[edge].portal;A=(camera.position.z>pt.zf+0.3)?FK:nodeById[edge];}
+  SEAMNOW.on=edge===FORK&&c.t<1;SEAMNOW.p.copy(SEAM.seamP.value);SEAMNOW.n.copy(SEAM.seamN.value);SEAMNOW.s=SEAM.seamS.value;
+  if(B){/* the first alley opening onto the square: blend the two along a plane fixed in the street */
+    /* one pass on screen: the square first, but only where the alley in front no longer hides it (depth pre-pass),
+       then the alley on top, faded out beyond the plane */
+    const w=sstep(0.9,1,c.t);SEAM.fadeA.value=1-w;
+    const DB=window.__dbg||{};scissor(null,null);renderer.clear(true,true,true);if(w<=0&&!DB.noPre)renderer.render(preScene,camera);
+    if(!DB.noB)drawNode(null,B,true);renderer.clearDepth();
+    SEAM.seamOn.value=1;if(!DB.noA)renderer.render(A.scene,camera);SEAM.seamOn.value=0;
+    renderer.render(vigScene,compCam);FINFO.path='blend';}
+  else{SEAM.seamOn.value=0;drawNode(null,A);renderer.render(vigScene,compCam);FINFO.path='direct';}
+  FINFO.calls=renderer.info.render.calls;FINFO.tris=renderer.info.render.triangles;FINFO.n++;
+  visNode=edge===FORK&&c.t<1?(c.t>0.6?FK:A):A;if(edge!==FORK&&camera.position.z<EDGES[edge].portal.zf+fillD)visNode=nodeById[edge];
+  /* overlays (only touch the page when something actually changes) */
+  const showSigns=mode!=='intro'&&atFork()&&!auto;
+  signs.forEach(sg=>{if(sg.on!==showSigns){sg.on=showSigns;sg.b.classList.toggle('show',showSigns);}if(!showSigns)return;tmp.copy(sg.loc).project(camera);
+    let x=(tmp.x+1)/2*W,y=(1-tmp.y)/2*H;const m=Math.min(80,W*0.2);const edgeS=tmp.z>1?'':x<m?'l':x>W-m?'r':'';x=Math.max(m,Math.min(W-m,x));y=Math.max(90,Math.min(H-150,y));
+    if(sg.b.dataset.edge!==edgeS)sg.b.dataset.edge=edgeS;sg.b.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%)`;});
+  dots.forEach(o=>{let vis=mode==='walk'&&o.n===visNode&&!auto;let show=false;
+    if(vis&&SEAMNOW.on&&tmp2.copy(o.w).sub(SEAMNOW.p).dot(SEAMNOW.n)>SEAMNOW.s-0.3)vis=false;
+    if(vis){tmp.copy(o.w).project(camera);const dist=o.w.distanceTo(camera.position);show=tmp.z<1&&dist<16&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05;
+      if(show)o.d.style.transform=`translate(${((tmp.x+1)/2*W).toFixed(1)}px,${((1-tmp.y)/2*H-10).toFixed(1)}px)`;}
+    if(o.on!==show){o.on=show;o.d.classList.toggle('show',show);}});
+  /* end of alley card */
+  const e=EDGES[edge];const atEnd=edge!==FORK&&s>e.L+e.tail-0.15&&!auto&&mode==='walk';if(atEnd&&!endShown)showEnd();if(!atEnd&&endShown)hideEnd();endShown=atEnd;
+  /* room name */
+  const room=visNode.room?ROOMS.find(r=>r.id===visNode.room):null;const key=room?room.id:'fork';
+  if(key!==lastRoom){lastRoom=key;const rn=D('roomNow');rn.style.opacity=0;setTimeout(()=>{D('roomN').textContent=room?room.n:'CARREFOUR';D('roomT').textContent=room?room.ar:'المفترق: اختار زنقة';rn.style.opacity=1;},250);
+    railBtns.forEach(x=>x.b.classList.toggle('on',x.r===room));
+    const ri=room?ROOMS.indexOf(room):0.5;D('railFill').style.width=(ri/(ROOMS.length-1))*100+'%';}
+  lastRendered=true;
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.__museum={openPiece:id=>openPiece(pieceById[id]),enter,walkTo,set:(e,v)=>{edge=e;s=sT=v;auto=null;poke();},lockRS:v=>{rsLock=true;rsCap=v;resize();},perf:()=>({RS:+RS.toFixed(3),rsCap:+rsCap.toFixed(3),W,H,AA,calls:FINFO.calls,tris:FINFO.tris,path:FINFO.path,rendered:FINFO.n}),state:()=>({mode,edge,s:+s.toFixed(2),auto:!!auto,ready:NODES.every(n=>n.ready)}),edges:()=>Object.fromEntries(Object.entries(EDGES).map(([k,v])=>[k,+(v.L+v.tail).toFixed(2)]))};
+
+}catch(err){console.error(err);noGL();}
+
+/* ================= VIEW IN YOUR ROOM (AR) =================
+   The chosen carpet is built right here in the browser as a real-size 3D rug (a GLB made from its own photo,
+   at the size picked in the panel) and shown with <model-viewer>. On a phone it can be laid on the real floor:
+   Android through WebXR, iPhone through AR Quick Look (model-viewer turns the rug into USDZ by itself).
+   Scene Viewer is left out on purpose: it is a separate app that has to download the model from a public address, and this rug only exists in the page. */
+const MV_URL='https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js';
+const QR_URL='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+const AR={mv:null,mvReady:null,url:null,piece:null,size:null,tok:0};
+/* sizes offered in the AR view: the piece's own sizes, or common sizes as an example when it has none (moquette, unknown sizes) */
+const AR_EX=[[120,170],[160,230],[200,300],[250,350]];
+function arSizes(p){return p.sizes&&p.sizes.length&&!p.perM?{list:p.sizes,ex:false}:{list:AR_EX,ex:true};}
+function arDims(p,s){const o=arSizes(p);s=s||(curSize&&current===p&&!o.ex?curSize:null)||(o.ex?(p.perM?[200,300]:[160,230]):o.list[0]);
+  return {s,w:s[0]/100,h:s[1]/100,label:s[0]+' × '+s[1]+' سم'+(o.ex?' (قياس مثال)':'')};}
+/* a thin box (8 mm) lying on the floor, the photo on top and its border colour running down the sides */
+function rugGeometry(w,h){const t=0.008,x=w/2,z=h/2,P=[],N=[],T=[],I=[];
+  const quad=(v,n,uv)=>{const b=P.length/3;v.forEach((p,i)=>{P.push(...p);N.push(...n);T.push(...uv[i]);});I.push(b,b+1,b+2,b,b+2,b+3);};
+  quad([[-x,t,-z],[-x,t,z],[x,t,z],[x,t,-z]],[0,1,0],[[0,0],[0,1],[1,1],[1,0]]);          // top
+  quad([[-x,0,z],[x,0,z],[x,t,z],[-x,t,z]],[0,0,1],[[0,.998],[1,.998],[1,1],[0,1]]);       // front edge
+  quad([[x,0,-z],[-x,0,-z],[-x,t,-z],[x,t,-z]],[0,0,-1],[[1,.002],[0,.002],[0,0],[1,0]]);  // back edge
+  quad([[x,0,z],[x,0,-z],[x,t,-z],[x,t,z]],[1,0,0],[[.998,1],[.998,0],[1,0],[1,1]]);       // right edge
+  quad([[-x,0,-z],[-x,0,z],[-x,t,z],[-x,t,-z]],[-1,0,0],[[.002,0],[.002,1],[0,1],[0,0]]);  // left edge
+  quad([[-x,0,-z],[x,0,-z],[x,0,z],[-x,0,z]],[0,-1,0],[[0,0],[1,0],[1,1],[0,1]]);          // underside
+  return {P,N,T,I};}
+function makeGLB(g,img,mime){
+  const parts=[],views=[];let off=0;
+  const add=(arr,target)=>{const u8=new Uint8Array(arr.buffer||arr,arr.byteOffset||0,arr.byteLength);const pad=(4-u8.byteLength%4)%4;
+    const v={buffer:0,byteOffset:off,byteLength:u8.byteLength};if(target)v.target=target;views.push(v);parts.push(u8);if(pad)parts.push(new Uint8Array(pad));off+=u8.byteLength+pad;return views.length-1;};
+  const P=new Float32Array(g.P),n=P.length/3,mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
+  for(let i=0;i<n;i++)for(let k=0;k<3;k++){const v=P[i*3+k];if(v<mn[k])mn[k]=v;if(v>mx[k])mx[k]=v;}
+  const vP=add(P,34962),vN=add(new Float32Array(g.N),34962),vT=add(new Float32Array(g.T),34962),vI=add(new Uint16Array(g.I),34963),vImg=add(new Uint8Array(img));
+  const json={asset:{version:'2.0',generator:'Dar Zarabi'},scene:0,scenes:[{nodes:[0]}],nodes:[{mesh:0,name:'rug'}],
+    meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1,TEXCOORD_0:2},indices:3,material:0}]}],
+    materials:[{name:'carpet',pbrMetallicRoughness:{baseColorTexture:{index:0},metallicFactor:0,roughnessFactor:0.95}}],
+    textures:[{sampler:0,source:0}],samplers:[{magFilter:9729,minFilter:9987,wrapS:33071,wrapT:33071}],images:[{bufferView:vImg,mimeType:mime}],
+    accessors:[{bufferView:vP,componentType:5126,count:n,type:'VEC3',min:mn,max:mx},{bufferView:vN,componentType:5126,count:n,type:'VEC3'},
+      {bufferView:vT,componentType:5126,count:n,type:'VEC2'},{bufferView:vI,componentType:5123,count:g.I.length,type:'SCALAR'}],
+    bufferViews:views,buffers:[{byteLength:off}]};
+  let js=new TextEncoder().encode(JSON.stringify(json));const jp=(4-js.length%4)%4;if(jp){const t=new Uint8Array(js.length+jp);t.set(js);t.fill(32,js.length);js=t;}
+  const total=12+8+js.length+8+off,head=new DataView(new ArrayBuffer(20));
+  head.setUint32(0,0x46546C67,true);head.setUint32(4,2,true);head.setUint32(8,total,true);head.setUint32(12,js.length,true);head.setUint32(16,0x4E4F534A,true);
+  const bh=new DataView(new ArrayBuffer(8));bh.setUint32(0,off,true);bh.setUint32(4,0x004E4942,true);
+  return new Blob([head.buffer,js,bh.buffer,...parts],{type:'model/gltf-binary'});}
+async function fetchFirst(urls){for(const u of urls){try{const r=await fetch(u);if(r.ok)return r.arrayBuffer();}catch(e){}}throw new Error('no image');}
+/* real pieces have a tight wall crop (img/w); demo pieces only have their panel photo. The rug's long side follows the photo's long side. */
+async function rugBlob(p,d){const img=await fetchFirst(p.demo?['img/'+p.id+'.jpg']:['img/w/'+p.id+'.jpg','img/'+p.id+'.jpg']);
+  let w=d.w,h=d.h;try{const bm=await createImageBitmap(new Blob([img],{type:'image/jpeg'}));if((bm.width>bm.height)!==(w>h)&&w!==h){[w,h]=[h,w];}bm.close&&bm.close();}catch(e){}
+  return makeGLB(rugGeometry(w,h),img,'image/jpeg');}
+function loadScript(src,module){return new Promise((ok,ko)=>{const s=document.createElement('script');if(module)s.type='module';s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s);});}
+function ensureMV(){if(!AR.mvReady)AR.mvReady=loadScript(MV_URL,true).then(()=>customElements.whenDefined('model-viewer')).catch(e=>{AR.mvReady=null;throw e;});return AR.mvReady;}
+function mkViewer(){const mv=document.createElement('model-viewer');
+  ['ar','camera-controls'].forEach(a=>mv.setAttribute(a,''));
+  Object.entries({'ar-modes':'webxr quick-look','ar-placement':'floor','ar-scale':'fixed','touch-action':'pan-y','shadow-intensity':'1','shadow-softness':'0.8',
+    'camera-orbit':'0deg 58deg auto','field-of-view':'27deg','interaction-prompt':'none','tone-mapping':'neutral','exposure':'1.05','alt':'الزربية بالقياس الحقيقي'}).forEach(([k,v])=>mv.setAttribute(k,v));
+  mv.innerHTML='<button slot="ar-button" class="cta ar-go" type="button">حط الزربية فالأرض ديالك</button>';
+  mv.addEventListener('load',()=>{D('arLoad').hidden=true;arHint();});
+  mv.addEventListener('error',()=>{D('arLoad').hidden=false;D('arLoad').textContent='ما قدرناش نوجدو الزربية 3D فهاد الجهاز.';});
+  mv.addEventListener('ar-status',e=>{if(e.detail.status==='failed')D('arHint').textContent='الـ AR ما خدمش فهاد التيليفون. جرب Chrome فأندرويد ولا Safari فآيفون.';});
+  D('arStage').appendChild(mv);return mv;}
+async function showRug(p,d){
+  const tok=AR.tok=(AR.tok||0)+1;AR.size=d.s;
+  D('arSize').textContent=d.label;D('arLoad').hidden=false;D('arLoad').textContent='كنوجدو الزربية بالقياس ديالها…';
+  D('arSizes').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.s===d.s.join('x')));
+  try{
+    const [blob]=await Promise.all([rugBlob(p,d),ensureMV()]);
+    if(tok!==AR.tok)return;
+    if(AR.url)URL.revokeObjectURL(AR.url);AR.url=URL.createObjectURL(blob);
+    if(!AR.mv)AR.mv=mkViewer();
+    AR.mv.alt=p.ar+' '+d.label;AR.mv.src=AR.url;
+  }catch(e){console.error(e);if(tok===AR.tok)D('arLoad').textContent='ما قدرناش نوجدو الزربية دابا. عاود من بعد.';}
+}
+function openAR(){
+  const p=current;if(!p)return;AR.piece=p;const d=arDims(p);
+  D('arTitle').textContent=p.ar;D('arHint').textContent='';D('arQr').hidden=true;
+  const o=arSizes(p),box=D('arSizes');box.innerHTML='';
+  o.list.forEach(s=>{const b=document.createElement('button');b.type='button';b.dataset.s=s.join('x');b.textContent=s[0]+' × '+s[1];
+    b.onclick=()=>{if(AR.size&&AR.size.join('x')===b.dataset.s)return;showRug(p,arDims(p,s));};box.appendChild(b);});
+  D('arOvl').hidden=false;requestAnimationFrame(()=>D('arOvl').classList.add('show'));
+  showRug(p,d);
+}
+function arHint(){const mv=AR.mv;
+  if(mv&&mv.canActivateAR){D('arHint').textContent='ضغط على الزر، ووجه التيليفون للأرض وحركو شوية حتى تبان الزربية بالقياس الحقيقي ديالها.';return;}
+  const phone=matchMedia('(pointer:coarse)').matches;
+  D('arHint').textContent=phone?(window.top!==window?'دور الزربية بالصبع. الـ AR (الزربية فالأرض ديالك) كيخدم فالموقع نيشان، ماشي فهاد المعاينة.':'دور الزربية بالصبع. هاد التيليفون ما كيدعمش الـ AR، جرب Chrome فأندرويد ولا Safari فآيفون.')
+    :'دور الزربية بالفأرة. باش تحطها فالأرض ديالك، حل هاد الصفحة فالتيليفون.';
+  if(phone)return;
+  /* on a computer, offer a code to scan with the phone (only on the public site, where the address is shareable) */
+  if(window.top===window&&/^https:/.test(location.protocol)&&current){
+    const url=location.origin+location.pathname+'#piece-'+current.id+'-ar';
+    loadScript(QR_URL).then(()=>{const box=D('arQrCode');box.innerHTML='';new QRCode(box,{text:url,width:132,height:132,colorDark:'#16120e',colorLight:'#f1e8d8'});D('arQr').hidden=false;}).catch(()=>{});}
+}
+function closeAR(){D('arOvl').classList.remove('show');setTimeout(()=>{D('arOvl').hidden=true;},300);}
+/* devices without WebGL can't show the 3D rug either, so the button is hidden there */
+const AR_OK=(()=>{try{const c=document.createElement('canvas'),g=c.getContext('webgl2')||c.getContext('webgl');if(!g)return false;const x=g.getExtension('WEBGL_lose_context');if(x)x.loseContext();return true;}catch(e){return false;}})();
+if(!AR_OK)D('arBtn').hidden=true;
+D('arBtn').onclick=openAR;D('arClose').onclick=closeAR;
+D('arOvl').addEventListener('click',e=>{if(e.target===D('arOvl'))closeAR();});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!D('arOvl').hidden){closeAR();e.stopPropagation();}},true);
+/* a link ending in -ar (from the QR code) opens the piece, then its AR view */
+{const m=location.hash.match(/^#piece-(\w+)-ar$/);if(m){const mo=new MutationObserver(()=>{if(D('panel').classList.contains('open')&&current&&current.id===m[1]){mo.disconnect();setTimeout(openAR,350);}});
+  mo.observe(D('panel'),{attributes:true,attributeFilter:['class']});}}
+window.__ar={openAR,closeAR,rugBlob,arDims,state:()=>({open:!D('arOvl').hidden,size:AR.size,loaded:!!(AR.mv&&AR.mv.loaded),canAR:!!(AR.mv&&AR.mv.canActivateAR)})};
+
+</script>
