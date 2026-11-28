@@ -325,29 +325,23 @@ const ROOMS=[
   {id:'bazaar',n:'RUE IV',ar:'زنقة البازار',fr:'Rue du bazar'},
 ];
 const PIECES=[
-  {id:'c13',room:'classique',ar:'الوردة الحمراء',fr:'Rose de Tabriz',rate:180,desc:'زربية كلاسيكية بلون أحمر عميق، فالوسط ميدالية كحلة وذهبية محاطة بأغصان ورد، وإطار عاجي مزخرف.',style:'كلاسيكي فارسي',colors:'أحمر، عاجي، كحل'},
-  {id:'c27',room:'classique',ar:'ليل أصفهان',fr:'Nuit d’Ispahan',rate:190,desc:'أرضية كحلة بحال ليلة صافية، ونجمة كبيرة فالوسط بألوان ترابية ودهبية. قطعة كتعمّر الصالة بوحدها.',style:'كلاسيكي فارسي',colors:'كحل، بيج، ذهبي'},
-  {id:'c29',room:'classique',ar:'قرمز',fr:'Carmin',rate:170,desc:'أحمر صافي وميدالية بيضاء رقيقة، محاطة بإطار عريض منقوش.',style:'كلاسيكي',colors:'أحمر، أبيض'},
-  {id:'c28',room:'classique',ar:'عاج',fr:'Ivoire',rate:170,desc:'ألوان هادئة بين البيج والرمادي، بميدالية ناعمة وورود صغيرة.',style:'كلاسيكي هادئ',colors:'بيج، رمادي فاتح'},
-  {id:'c35',room:'classique',ar:'ياقوت',fr:'Rubis',rate:260,desc:'بوردو مخملي بلمعة حرير، وميدالية عاجية ودهبية بارزة.',style:'فاخر، لمعة حريرية',colors:'بوردو، عاجي، ذهبي'},
-  {id:'c34',room:'classique',ar:'رماد ذهبي',fr:'Cendre dorée',rate:260,desc:'أرضية رمادية بتموجات بحال الرخام، ونقوش ذهبية على الإطار والوسط.',style:'فاخر، لمعة حريرية',colors:'رمادي، عاجي، ذهبي'},
-  {id:'c18',room:'moderne',ar:'إنتيتاش',fr:'Entittach',rate:150,desc:'لوحة تجريدية: ضربات فرشاة كحلة ورمادية وخيوط نحاسية.',style:'عصري تجريدي',colors:'كحل، رمادي، نحاسي'},
-  {id:'c02',room:'moderne',ar:'موجة',fr:'La Vague',price:169,old:250,sizes:null,real:true,gift:true,desc:'موجات رمادية وسوداء ولمسات فضية. عرض من الانستغرام: 169 درهم بدل 250، ومعاها زربية هدية.',style:'عصري',colors:'رمادي، أسود، فضي'},
-  {id:'c24',room:'moderne',ar:'إيقاع',fr:'Rythme',rate:150,desc:'خطوط حمراء وذهبية كتلتوى فوق أرضية بيضاء، بحال إيقاع موسيقي.',style:'عصري',colors:'أبيض، أحمر، ذهبي'},
-  {id:'c31',room:'moderne',ar:'متاهة',fr:'Labyrinthe',rate:140,desc:'مربعات متداخلة محفورة فالصوف بلون بيج موحد.',style:'عصري بارز',colors:'بيج'},
-  {id:'c12',room:'moderne',ar:'بيج بلجيك',fr:'Beige Belgique',rate:150,realName:true,desc:'موديل «Beige Belgique»: مربعات بيج وبني بنقشة هندسية واضحة.',style:'عصري هندسي',colors:'بيج، بني'},
-  {id:'c17',room:'classique',ar:'صالون ملكي',fr:'Salon royal',rate:220,sizes:[[250,350],[300,400],[400,600]],desc:'زربية كبيرة لصالون مغربي، بيج ودهبي، بنجمة ثمانية فالوسط.',style:'صالون مغربي',colors:'بيج، ذهبي'},
-  {id:'c33',room:'moderne',ar:'بوردو الصالون',fr:'Salon bordeaux',rate:200,sizes:[[200,300],[300,400],[400,600]],desc:'مخمل بوردو مع إطار أبيض مطروز وميدالية فالوسط.',style:'صالون مغربي',colors:'بوردو، أبيض'},
-  {id:'c20',room:'bazaar',ar:'سجاد المدينة',fr:'Sajad El Madina',price:250,sizes:[[80,120]],realName:true,extra:['c14'],desc:'«سجاد المدينة المنورة فقط في DAR ZARABI». سجادة صلاة ناعمة بأهداب ووجه منقوش.',style:'سجاد صلاة',colors:'أخضر، كحل، عاجي'},
-  {id:'c04',room:'moquette',ar:'فراش المساجد',fr:'Tapis de mosquée',perM:true,phone:'06 61 99 19 95',desc:'أفرشة المساجد فجميع المدن: كنقيسو ونركبو فالبلاصة. الثمن على حسب المساحة.',style:'فراش المساجد، تركيب',colors:'أحمر، أبيض'},
-
-  {id:'mq1',room:'moquette',ar:'موكيط بيج',fr:'Moquette beige',perM:true,demo:true,desc:'موكيط لون واحد، كيتقاد على القياس ديال البيت ولا المكتب. كنقيسو ونركبو فالبلاصة.',style:'موكيط على القياس',colors:'بيج'},
-  {id:'mq2',room:'moquette',ar:'موكيط رمادي',fr:'Moquette grise',perM:true,demo:true,desc:'رمادي هادي كيمشي مع كلشي، مزيان للصالة والمكاتب.',style:'موكيط على القياس',colors:'رمادي'},
-  {id:'mq3',room:'moquette',ar:'موكيط أخضر',fr:'Moquette verte',perM:true,demo:true,desc:'أخضر عميق، كيتستعمل بزاف فالمساجد والقاعات الكبيرة.',style:'موكيط على القياس',colors:'أخضر'},
-  {id:'bz1',room:'bazaar',ar:'كليم أصفر عتيق',fr:'Kilim ancien jaune',rate:200,demo:true,desc:'كليم أمازيغي منسوج باليد، أصفر وبرتقالي بنقوش معينات زرقاء.',style:'كليم قديم، بازار',colors:'أصفر، برتقالي، أزرق'},
-  {id:'bz2',room:'bazaar',ar:'حنبل',fr:'Hanbel',rate:180,demo:true,desc:'حنبل تقليدي بألوان طبيعية مطفية بالزمان.',style:'حنبل، بازار',colors:'أحمر، بيج'},
-  {id:'bz3',room:'bazaar',ar:'زربية الأطلس',fr:'Tapis du Moyen Atlas',rate:190,demo:true,desc:'زربية من الأطلس بنقوش هندسية حمراء وبيضاء.',style:'أطلس، بازار',colors:'أحمر، أبيض'},
-  {id:'bz4',room:'bazaar',ar:'كليم أحمر كبير',fr:'Grand kilim rouge',rate:210,demo:true,sizes:[[200,300],[250,350],[300,400]],desc:'كليم كبير بأحمر قوي ونقوش زرقاء وبيضاء، قطعة ديال البازار.',style:'كليم قديم، بازار',colors:'أحمر، أزرق، أبيض'},
+  {"id":"k01","room":"moquette","ar":"زربية شاغ ذهبية","fr":"Tapis shaggy doré","rate":160,"sizes":[[80,150],[60,120]],"desc":"صوف طويل وطري تحت الرجلين، كتعطي الدفا للبيت وكتبان فخمة.","style":"شاغ، صوف طويل","colors":"ذهبي","kind":"shag","fringe":true,"pimg":"img/cat/k01_p.jpg","wtex":"img/cat/k01_w.jpg","cat":true,"px":[3432,4096]},
+  {"id":"k02","room":"classique","ar":"سجادة زيتية","fr":"Tapis de prière olive","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"زيتي، رمادي، كحل","kind":"prayer","fringe":true,"pimg":"img/cat/k02_p.jpg","wtex":"img/cat/k02_w.jpg","cat":true,"px":[3493,4096]},
+  {"id":"k03","room":"classique","ar":"زربية بوردو","fr":"Tapis bordeaux","rate":180,"sizes":[[120,170],[160,230],[200,300],[250,350]],"desc":"زربية منسوجة بصوف كثيف وناعم، كتعمّر الصالون وكتبقى معاك سنين.","style":"كلاسيكي","colors":"بوردو، بيج، برتقالي","kind":"pile","fringe":true,"pimg":"img/cat/k03_p.jpg","wtex":"img/cat/k03_w.jpg","cat":true,"px":[3046,4096]},
+  {"id":"k04","room":"moquette","ar":"زربية شاغ رمادية","fr":"Tapis shaggy gris","rate":160,"sizes":[[80,150],[60,120]],"desc":"صوف طويل وطري تحت الرجلين، كتعطي الدفا للبيت وكتبان فخمة.","style":"شاغ، صوف طويل","colors":"رمادي، بيج","kind":"shag","fringe":true,"pimg":"img/cat/k04_p.jpg","wtex":"img/cat/k04_w.jpg","cat":true,"px":[3432,4096]},
+  {"id":"k05","room":"moderne","ar":"زربية بيج","fr":"Tapis beige","rate":180,"sizes":[[120,170],[160,230],[200,300],[250,350]],"desc":"زربية منسوجة بصوف كثيف وناعم، كتعمّر الصالون وكتبقى معاك سنين.","style":"كلاسيكي","colors":"بيج","kind":"pile","fringe":false,"pimg":"img/cat/k05_p.jpg","wtex":"img/cat/k05_w.jpg","cat":true,"px":[2746,4096]},
+  {"id":"k07","room":"moderne","ar":"زربية رمادية","fr":"Tapis gris","rate":180,"sizes":[[120,170],[160,230],[200,300],[250,350]],"desc":"زربية منسوجة بصوف كثيف وناعم، كتعمّر الصالون وكتبقى معاك سنين.","style":"كلاسيكي","colors":"رمادي، بيج، أبيض","kind":"pile","fringe":false,"pimg":"img/cat/k07_p.jpg","wtex":"img/cat/k07_w.jpg","cat":true,"px":[2294,4096]},
+  {"id":"k08","room":"bazaar","ar":"زربية خفيفة كحلة","fr":"Tapis plat marine","rate":140,"sizes":[[70,110],[80,120]],"desc":"زربية بلا صوف طويل، خفيفة وساهلة فالتنقية، مزيانة للكوزينة والكولوار.","style":"منسوجة مسطحة","colors":"كحل، بيج، رمادي","kind":"flat","fringe":true,"pimg":"img/cat/k08_p.jpg","wtex":"img/cat/k08_w.jpg","cat":true,"px":[2406,4096]},
+  {"id":"k09","room":"bazaar","ar":"سجادة كحلة","fr":"Tapis de prière noir","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"كحل، رمادي، بني","kind":"prayer","fringe":true,"pimg":"img/cat/k09_p.jpg","wtex":"img/cat/k09_w.jpg","cat":true,"px":[2589,4096]},
+  {"id":"k10","room":"bazaar","ar":"سجادة زيتية","fr":"Tapis de prière olive","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"زيتي","kind":"prayer","fringe":true,"pimg":"img/cat/k10_p.jpg","wtex":"img/cat/k10_w.jpg","cat":true,"px":[2583,4096]},
+  {"id":"k11","room":"classique","ar":"سجادة كحلة","fr":"Tapis de prière marine","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"كحل، أزرق رمادي، رمادي","kind":"prayer","fringe":true,"pimg":"img/cat/k11_p.jpg","wtex":"img/cat/k11_w.jpg","cat":true,"px":[2120,4096]},
+  {"id":"k12","room":"bazaar","ar":"سجادة رمادية","fr":"Tapis de prière gris","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"رمادي","kind":"prayer","fringe":true,"pimg":"img/cat/k12_p.jpg","wtex":"img/cat/k12_w.jpg","cat":true,"px":[2552,4096]},
+  {"id":"k13","room":"classique","ar":"سجادة رمادية","fr":"Tapis de prière gris","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"رمادي","kind":"prayer","fringe":true,"pimg":"img/cat/k13_p.jpg","wtex":"img/cat/k13_w.jpg","cat":true,"px":[2553,4096]},
+  {"id":"k14","room":"moderne","ar":"زربية بيج","fr":"Tapis beige","rate":180,"sizes":[[120,170],[160,230],[200,300],[250,350]],"desc":"زربية منسوجة بصوف كثيف وناعم، كتعمّر الصالون وكتبقى معاك سنين.","style":"كلاسيكي","colors":"بيج، رمادي، أبيض","kind":"pile","fringe":false,"pimg":"img/cat/k14_p.jpg","wtex":"img/cat/k14_w.jpg","cat":true,"px":[2293,4096]},
+  {"id":"k15","room":"moderne","ar":"زربية رمادية","fr":"Tapis gris","rate":180,"sizes":[[120,170],[160,230],[200,300],[250,350]],"desc":"زربية منسوجة بصوف كثيف وناعم، كتعمّر الصالون وكتبقى معاك سنين.","style":"كلاسيكي","colors":"رمادي، بني، بيج","kind":"pile","fringe":false,"pimg":"img/cat/k15_p.jpg","wtex":"img/cat/k15_w.jpg","cat":true,"px":[3114,4096]},
+  {"id":"k16","room":"bazaar","ar":"سجادة زيتية","fr":"Tapis de prière olive","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"زيتي","kind":"prayer","fringe":true,"pimg":"img/cat/k16_p.jpg","wtex":"img/cat/k16_w.jpg","cat":true,"px":[2846,4096]},
+  {"id":"k17","room":"classique","ar":"سجادة زيتية","fr":"Tapis de prière olive","rate":150,"sizes":[[70,110],[80,120]],"desc":"سجادة صلاة بنقوش المحراب، خفيفة وساهلة فالطوي.","style":"سجادة صلاة","colors":"زيتي، رمادي، بيج","kind":"prayer","fringe":true,"pimg":"img/cat/k17_p.jpg","wtex":"img/cat/k17_w.jpg","cat":true,"px":[2846,4096]},
+  {"id":"k18","room":"classique","ar":"زربية رمادية","fr":"Tapis gris","rate":180,"sizes":[[120,170],[160,230],[200,300],[250,350]],"desc":"زربية منسوجة بصوف كثيف وناعم، كتعمّر الصالون وكتبقى معاك سنين.","style":"كلاسيكي","colors":"رمادي، أزرق رمادي","kind":"pile","fringe":false,"pimg":"img/cat/k18_p.jpg","wtex":"img/cat/k18_w.jpg","cat":true,"px":[2471,4096]}
 ];
 PIECES.forEach((p,i)=>{p.acc='DZ-'+String(i+1).padStart(3,'0');p.sizes=p.sizes===undefined?STD:p.sizes;});
 const fmt=n=>n.toLocaleString('fr-MA').replace(/ | /g,' ');
@@ -367,7 +361,7 @@ function renderPrice(p,s){
 }
 function fillPanel(p){
   current=p;
-  D('pImg').src='img/'+p.id+'.jpg';D('pImg').alt=p.ar;D('pImgBox').classList.remove('zoom');
+  D('pImg').src=p.pimg||('img/'+p.id+'.jpg');D('pImg').alt=p.ar;D('pImgBox').classList.remove('zoom');
   const imgs=[p.id].concat(p.extra||[]);D('pThumbs').innerHTML='';
   if(imgs.length>1)imgs.forEach((im,i)=>{const b=document.createElement('button');b.type='button';if(!i)b.className='on';b.innerHTML=`<img src="img/${im}.jpg" alt="">`;
     b.onclick=()=>{D('pImg').src='img/'+im+'.jpg';D('pThumbs').querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');};D('pThumbs').appendChild(b);});
@@ -405,7 +399,7 @@ D('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(D('pPhone
 /* ================= FALLBACK ================= */
 function noGL(){
   D('nogl').hidden=false;D('veil').classList.add('gone');
-  PIECES.forEach(p=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<img src="img/${p.id}.jpg" alt=""><b style="font-family:var(--f-ar-display)">${p.ar}</b><br><small>${fromPrice(p)}</small>`;
+  PIECES.forEach(p=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<img src="${p.pimg||'img/'+p.id+'.jpg'}" alt=""><b style="font-family:var(--f-ar-display)">${p.ar}</b><br><small>${fromPrice(p)}</small>`;
     b.onclick=()=>{fillPanel(p);D('panel').classList.add('open');};D('noglGrid').appendChild(b);});
   D('nogl').style.zIndex=9;
   D('closeBtn').onclick=()=>D('panel').classList.remove('open');
@@ -431,22 +425,27 @@ const D2R=Math.PI/180;
 const QS=new URLSearchParams(location.search),GRID=(QS.get('grid')||'160,120').split(',').map(Number),GRIDC=QS.get('gridc')==='0'?null:(QS.get('gridc')||'80,60').split(',').map(Number),LODD=+(QS.get('lodd')||5.5);
 const NODES=[
  {id:'main',img:'alley_hero_1.jpg',sky:'alley_hero_1.png',geo:'hero',room:'classique',pos:[0,0,0],yaw:0,slots:[
-   [[[664,160],[988,6],[992,512],[668,368]],'c13'],[[[-40,0],[162,98],[162,465],[-40,560]],'c27'],[[[220,128],[302,182],[306,425],[232,480]],'c35'],
-   [[[348,155],[412,200],[416,355],[356,378]],'c29'],[[[441,226],[466,238],[467,330],[445,338]],'c28'],[[[490,233],[512,240],[512,323],[492,326]],'c34']]},
+   [[[664,160],[988,6],[992,512],[668,368]],['k03','k18'],{rot:90,hi:1}],[[[-40,0],[162,98],[162,465],[-40,560]],'k11',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k02'],
+   [[[348,155],[412,200],[416,355],[356,378]],'k17',{rot:90}],[[[441,226],[466,238],[467,330],[445,338]],'k13',{rot:90}],[[[490,233],[512,240],[512,323],[492,326]],'k03']],
+  floor:[{id:'k18',d:5.9,x:0.05,w:1.6,l:2.3,rot:-3},{id:'k11',d:9.4,x:-0.2,w:0.8,l:1.2,rot:6}]},
  {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0,0,-12],yaw:0,seam:[0.55,11],slots:[],
   portals:[{to:'modern',side:'left',yb:462,poly:[[162,462],[163,320],[170,300],[172,285],[180,262],[190,248],[200,238],[212,230],[235,226],[260,223],[282,230],[300,240],[320,252],[333,262],[341,272],[346,284],[349,300],[350,320],[350,462]]},
            {to:'bazaar',side:'center',yb:462,poly:[[412,462],[412,320],[413,303],[416,289],[424,275],[436,261],[450,249],[470,238],[490,229],[510,222],[530,229],[550,238],[570,251],[586,265],[598,279],[606,295],[610,309],[613,330],[614,462]]},
            {to:'moquette',side:'right',yb:462,poly:[[675,462],[675,312],[679,283],[685,272],[695,260],[708,248],[725,237],[742,229],[758,222],[775,227],[792,233],[808,243],[822,255],[833,268],[843,282],[848,296],[850,320],[850,462]]}]},
  {id:'modern',img:'alley_modern_a.jpg',sky:'alley_modern_a.png',geo:'hero',room:'moderne',slots:[
-   [[[664,158],[986,6],[990,520],[668,372]],'c18'],[[[-40,0],[162,98],[162,465],[-40,560]],'c02'],[[[220,128],[302,182],[306,425],[232,480]],'c12'],
-   [[[348,155],[412,200],[416,355],[356,378]],'c31'],[[[441,226],[466,238],[467,330],[445,338]],'c24'],[[[490,233],[512,240],[512,323],[492,326]],'c33']]},
+   [[[664,158],[986,6],[990,520],[668,372]],['k07','k14'],{rot:90,hi:1}],[[[-40,0],[162,98],[162,465],[-40,560]],'k15',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k05'],
+   [[[348,155],[412,200],[416,355],[356,378]],'k07',{rot:90}],[[[441,226],[466,238],[467,330],[445,338]],'k14',{rot:90}],[[[490,233],[512,240],[512,323],[492,326]],'k15']],
+  floor:[{id:'k05',d:4.2,x:0.05,w:1.6,l:2.3,rot:2},{id:'k14',d:10.6,x:0,w:1.2,l:1.7,rot:3}]},
  {id:'bazaar',img:'alley_bazaar_b.jpg',sky:'alley_bazaar_b.png',geo:'hero',room:'bazaar',slots:[
-   [[[662,160],[985,8],[990,525],[665,375]],'bz4',{hot:1}],[[[0,15],[160,98],[160,465],[0,540]],'bz1',{hot:1}],
-   [[[210,125],[290,172],[292,450],[214,500]],'bz2',{hot:1}],[[[358,170],[410,198],[412,357],[360,382]],'bz3',{hot:1}],
-   [[[625,478],[745,478],[745,566],[625,566]],'c20',{hot:1,floor:1}]]},
+   [[[662,160],[985,8],[990,525],[665,375]],['k12','k10','k09','k16'],{hi:1}],[[[0,15],[160,98],[160,465],[0,540]],'k08',{hi:1}],
+   [[[210,125],[290,172],[292,450],[214,500]],'k16'],[[[305,198],[326,206],[328,420],[309,442]],'k10'],[[[358,170],[410,198],[412,357],[360,382]],['k09','k12']],
+   [[[437,229],[466,236],[467,341],[440,350]],['k16','k09']],[[[487,239],[509,240],[510,329],[490,331]],'k08']],
+  floor:[{id:'k12',d:3.7,x:-0.15,w:0.8,l:1.2,rot:-7},{id:'k09',d:5.7,x:-0.45,w:0.8,l:1.2,rot:9},{id:'k16',d:10.8,x:0.05,w:0.8,l:1.2,rot:-4}]},
  {id:'moquette',img:'alley_moquette_b.jpg',sky:'alley_moquette_b.png',geo:'hero',room:'moquette',slots:[
-   [[[662,165],[985,8],[986,525],[668,370]],'mq3',{hot:1}],[[[-5,25],[163,96],[163,465],[-5,545]],'mq1',{hot:1}],
-   [[[212,130],[306,184],[309,425],[218,515]],'mq2',{hot:1}],[[[358,170],[412,198],[416,355],[362,380]],'c04']]}
+   [[[660,150],[985,-10],[986,528],[667,373]],['k01','k04'],{rot:90,hi:1}],[[[-5,25],[163,96],[163,465],[-5,545]],'k04',{hi:1}],
+   [[[212,130],[306,184],[309,425],[218,515]],'k01'],[[[358,170],[422,200],[422,348],[362,383]],'k04',{rot:90}],
+   [[[439,220],[467,233],[467,341],[441,354]],'k01'],[[[489,239],[509,240],[510,330],[491,330]],'k04']],
+  floor:[{id:'k01',d:4.0,x:-0.1,w:0.8,l:1.5,rot:4},{id:'k04',d:9.8,x:0.1,w:0.8,l:1.5,rot:-6}]}
 ];
 const nodeById=Object.fromEntries(NODES.map(n=>[n.id,n]));
 
@@ -463,7 +462,16 @@ function depthAt(g,x,y,noSky){
   return wallDepth(g,x);
 }
 function ray(g,x,y,z){return new THREE.Vector3((x-IW/2)/FOC*z,-(y-g.cy)/FOC*z,-z);}
+/* carpet textures: catalog pieces bring their own (wtex), older ones use img/w/<id>.jpg */
+const wallTex=(p,id)=>(p&&p.wtex)||'img/w/'+id+'.jpg';
+const floorTex=(p,id)=>(p&&(p.ftex||p.wtex))||'img/w/'+id+'.jpg';
+/* typical brightness of the street's paving in a photo (median over the floor area): the reference the laid carpets are lit against */
+function floorLum(img,g){try{const W=192,H=108,cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');cx.drawImage(img,0,0,W,H);
+  const px=cx.getImageData(0,0,W,H).data,v=[];for(let j=0;j<H;j++){const y=(j+.5)*IH/H;for(let i=Math.floor(W*.15);i<W*.85;i++){const x=(i+.5)*IW/W;if(y<junction(g,x)+6)continue;const k=(j*W+i)*4;v.push((px[k]*.299+px[k+1]*.587+px[k+2]*.114)/255);}}
+  if(v.length<20)return .35;v.sort((a,b)=>a-b);return v[Math.floor(v.length*.5)];}catch(e){return .35;}}
 
+/* a tiny blurred copy of a photo (halved step by step, so it is a true average): floor carpets read the light falling on their spot from it, smooth at any distance and with no mipmap tricks */
+function lightMap(img,cv){try{let src=img,w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;while(w>cv.width*2){const c=document.createElement('canvas');w=Math.max(cv.width,w>>1);h=Math.max(cv.height,h>>1);c.width=w;c.height=h;c.getContext('2d').drawImage(src,0,0,w,h);src=c;}cv.getContext('2d').drawImage(src,0,0,cv.width,cv.height);return true;}catch(e){return false;}}
 /* ---------- three.js setup ---------- */
 const stage=D('stage');
 /* performance: everything is drawn straight to the screen in one pass per frame. Resolution follows a pixel budget and drops by
@@ -490,15 +498,32 @@ const vigScene=new THREE.Scene();vigScene.add(new THREE.Mesh(new THREE.PlaneBuff
 const SEAM={seamOn:{value:0},seamP:{value:new THREE.Vector3()},seamN:{value:new THREE.Vector3(0,0,-1)},seamS:{value:0},floorS:{value:-99},feather:{value:0.45},roleB:{value:0},fadeA:{value:1}};
 let MATS=null,GCY=290;
 const SKYP=loadTex('img/sky/plate.jpg');SKYP.wrapS=SKYP.wrapT=THREE.ClampToEdgeWrapping;
-function photoMat(tex,tint,apron,skyM,mirror){const df={};if(apron)df.APRON=1;if(skyM)df.SKY=1;if(mirror)df.MIRROR=1;
-  const mm=new THREE.ShaderMaterial({defines:df,uniforms:Object.assign({map:{value:tex},tint:{value:new THREE.Color(tint||0xffffff)},skyM:{value:skyM||null},skyP:{value:SKYP},gcy:{value:GCY},gd0:{value:FOC*EYE/(IH-GCY)}},SEAM),
-  vertexShader:'varying vec2 vUv;varying vec3 vW,vL;varying float vFb;\n#ifdef APRON\nattribute float fb;\n#endif\nvoid main(){vUv=uv;vL=position;\n#ifdef APRON\nvFb=fb;\n#else\nvFb=0.;\n#endif\nvec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
-  fragmentShader:`uniform sampler2D map,skyM,skyP;uniform vec3 tint;uniform float seamOn,seamS,floorS,feather,roleB,gcy,gd0,fadeA;varying vec3 vL;uniform vec3 seamP,seamN;varying vec2 vUv;varying vec3 vW;varying float vFb;
+function photoMat(tex,tint,apron,skyM,mirror,rug){const df={};if(apron)df.APRON=1;if(skyM)df.SKY=1;if(mirror)df.MIRROR=1;if(rug)df.RUG=1;
+  const mm=new THREE.ShaderMaterial({defines:df,uniforms:Object.assign({map:{value:tex},tint:{value:new THREE.Color(tint||0xffffff)},skyM:{value:skyM||null},skyP:{value:SKYP},gcy:{value:GCY},gd0:{value:FOC*EYE/(IH-GCY)},
+    photo:{value:rug?rug.photo:null},lref:{value:rug?rug.lref:.35},rugM:{value:new THREE.Vector2(...(rug?rug.m:[0,0]))},rugS:{value:new THREE.Vector2(...(rug?rug.s:[1,1]))},fringe:{value:rug&&rug.fringe?1:0},shK:{value:.85}},SEAM),
+  vertexShader:'varying vec2 vUv;varying vec3 vW,vL;varying float vFb;\n#ifdef APRON\nattribute float fb;\n#endif\nvoid main(){vUv=uv;vL=position;\n#ifdef APRON\nvFb=fb;\n#else\nvFb=0.;\n#endif\nvec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;\n#ifdef RUG\nvec4 mv=viewMatrix*w;mv.xyz*=.98;gl_Position=projectionMatrix*mv;\n#else\ngl_Position=projectionMatrix*viewMatrix*w;\n#endif\n}',
+  fragmentShader:`uniform sampler2D map,skyM,skyP,photo;uniform vec3 tint;uniform vec2 rugM,rugS;uniform float seamOn,seamS,floorS,feather,roleB,gcy,gd0,fadeA,lref,fringe,shK;varying vec3 vL;uniform vec3 seamP,seamN;varying vec2 vUv;varying vec3 vW;varying float vFb;
     void main(){
+      #ifdef RUG
+      /* a carpet laid on the street: the quad is a little larger than the carpet. Inside: the carpet, lit by the photo's own
+         light on that spot (so shade near the walls falls on it too) and darkened along its edges. Outside: a soft contact
+         shadow on the stones, and wool fringes at the two short ends when the carpet has them. */
+      vec2 r=(vUv-rugM)/(1.-2.*rugM);vec2 e=min(r,1.-r);vec2 em=e*rugS;
+      float Z=max(.3,-vL.z);vec2 pu=vec2(.5+vL.x*.7421875/Z,1.-(gcy-vL.y*760./Z)/576.);
+      /* nearer than the photo's own ground (or past its sides) the light is read from the photo mirrored about its edge: continuous there, never the edge row smeared into stripes */vec2 pm=vec2(1.-abs(1.-abs(pu.x)),1.-abs(1.-abs(pu.y)));float sh=clamp(dot(texture2D(photo,clamp(pm,.016,.984)).rgb,vec3(.299,.587,.114))/max(lref,.02),.55,1.3);float pou=max(max(-pu.x,pu.x-1.),max(-pu.y,pu.y-1.));sh=mix(sh,1.,smoothstep(.12,.35,pou));float lit=mix(1.,sh,shK)*.93;
+      vec4 c;float ra=1.;
+      if(min(e.x,e.y)>=0.){c=texture2D(map,r);c.rgb*=lit*mix(.72,1.,smoothstep(0.,.035,min(em.x,em.y)));}
+      else{vec2 o=max(-em,0.);float sa=(1.-smoothstep(0.,.075,length(o)))*.45;float fr=0.;
+        if(fringe>.5&&e.x>0.&&o.y>0.&&o.y<.065){float th=fract(r.x*rugS.x*80.);float pat=smoothstep(.1,.3,th)*(1.-smoothstep(.55,.75,th));
+          fr=mix(pat,.45,clamp((Z-2.5)/4.,0.,1.))*(1.-smoothstep(.045,.065,o.y));}
+        c=vec4(vec3(.88,.84,.76)*lit*(.85+.15*smoothstep(0.,.06,o.y)),1.);ra=mix(sa,1.,fr);c.rgb*=fr/max(ra,.001);}
+      #else
+      float ra=1.;
       #ifdef MIRROR
       vec4 c=texture2D(map,vUv);
       #else
       vec2 o=max(-vUv,vUv-1.);float ou=max(o.x,o.y);vec4 c=ou>0.?texture2D(map,clamp(vUv,.0005,.9995),min(ou*90.,9.)):texture2D(map,vUv);
+      #endif
       #endif
       #ifdef APRON
       /* ground nearer than the photo's bottom edge: rebuilt from the photo's own paving, sampled in true ground
@@ -520,11 +545,17 @@ function photoMat(tex,tint,apron,skyM,mirror){const df={};if(apron)df.APRON=1;if
         /* the paving underfoot stays until the next photo's own ground begins: no smeared floor in between */
         if(vW.y<-1.52)keep=max(keep,1.-smoothstep(-feather,feather,dd-floorS));}
       float din=min(min(vUv.x,1.-vUv.x),1.-vUv.y);float ef=smoothstep(-.24,.09,din)*(1.-smoothstep(.6,1.,vFb));
-      float al=seamOn>.5?keep*fadeA:(roleB>.5?ef:1.);gl_FragColor=vec4(c.rgb*tint,al);}`});if(MATS)MATS.push(mm);return mm;}
+      float al=seamOn>.5?keep*fadeA:(roleB>.5?ef:1.);
+      #ifdef RUG
+      al=(seamOn>.5?keep*fadeA:1.)*ra;
+      #endif
+      gl_FragColor=vec4(c.rgb*tint,al);}`});if(MATS)MATS.push(mm);return mm;}
+/* floor carpets: drawn pulled 2% towards the eye along their own view rays (same place on screen), so the
+   coarse far-away paving mesh can never z-fight through them */
 /* build one photo node as a 3D group */
 function buildNode(n){
   MATS=n.mats=[];const g=GEO[n.geo];GCY=g.cy;const grp=new THREE.Group();const scene=new THREE.Scene();scene.add(grp);
-  const tex=loadTex('img/'+n.img,()=>{n.ready=true;});tex.minFilter=THREE.LinearMipmapLinearFilter;tex.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
+  n.lcv=document.createElement('canvas');n.lcv.width=32;n.lcv.height=18;n.lcv.getContext('2d').fillStyle='#777';n.lcv.getContext('2d').fillRect(0,0,32,18);n.ltex=new THREE.CanvasTexture(n.lcv);n.ltex.minFilter=n.ltex.magFilter=THREE.LinearFilter;n.ltex.generateMipmaps=false;const tex=loadTex('img/'+n.img,()=>{n.ready=true;n.lref=floorLum(tex.image,g);if(lightMap(tex.image,n.lcv))n.ltex.needsUpdate=true;n.rugMats.forEach(m=>{m.uniforms.lref.value=n.lref;});});n.rugMats=[];tex.minFilter=THREE.LinearMipmapLinearFilter;tex.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
   tex.wrapS=tex.wrapT=n.mirror?THREE.MirroredRepeatWrapping:THREE.ClampToEdgeWrapping;
   let skyM=null;if(n.sky){skyM=loadTex('img/sky/'+n.sky);skyM.minFilter=THREE.LinearFilter;skyM.generateMipmaps=false;}
   /* backdrop: the whole photo on a far plane, fills any gap the near mesh leaves when we move */
@@ -547,19 +578,50 @@ function buildNode(n){
   if(n.viaPortal&&GRIDC){n.coarse=new THREE.Mesh(mkGrid(GRIDC[0],GRIDC[1]),gmat);n.coarse.visible=false;grp.add(n.coarse);}
   /* carpets: real Dar Zarabi photos placed on the wall planes */
   n.rugs=[];
-  (n.slots||[]).forEach(([q,id,opt])=>{
-    const hot=opt&&opt.hot;const p=pieceById[id];
+  /* a slot's id can be a list: the painted carpet's area is then split into that many carpets hung side by side (even widths
+     along the wall), so long walls take real proportions instead of one stretched design. opt.rot=90 hangs a carpet sideways. */
+  const UV0=[0,1,1,1,1,0,0,0],UV90=[0,0,0,1,1,1,1,0];
+  (n.slots||[]).forEach(([q,ids,opt])=>{
+    const hot=opt&&opt.hot;
     let qq=q;if(!hot){const mx=(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,my=(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4;qq=q.map(([x,y])=>[mx+(x-mx)*1.05,my+(y-my)*1.04]);}
     const V=qq.map(([x,y])=>ray(g,x,y,(opt&&opt.floor)?depthAt(g,x,y)*0.97:wallDepth(g,x)*0.985));
+    const list=Array.isArray(ids)?ids:[ids],N=list.length;
+    list.forEach((id,k)=>{const p=pieceById[id];const t0=k/N,t1=(k+1)/N;
+      const P=N===1?V:[V[0].clone().lerp(V[1],t0),V[0].clone().lerp(V[1],t1),V[3].clone().lerp(V[2],t1),V[3].clone().lerp(V[2],t0)];
+      const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(P.flatMap(v=>[v.x,v.y,v.z]),3));
+      const r90=opt&&(Array.isArray(opt.rot)?opt.rot[k]:opt.rot)===90;
+      gg.setAttribute('uv',new THREE.Float32BufferAttribute(r90?UV90:UV0,2));gg.setIndex([0,3,1,1,3,2]);
+      let mat;
+      if(hot){mat=new THREE.MeshBasicMaterial({color:0xfff0d6,transparent:true,opacity:0,depthWrite:false});n.mats.push(mat);}
+      else{const t=loadTex(opt&&opt.hi&&!COARSE&&p&&p.pimg?p.pimg:wallTex(p,id))  /* phones keep the lighter wall copy: memory */;t.minFilter=THREE.LinearMipmapLinearFilter;t.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
+        mat=photoMat(t,0xeeeae4);mat.color=mat.uniforms.tint.value;}
+      const mesh=new THREE.Mesh(gg,mat);mesh.userData={piece:p,hot,node:n};grp.add(mesh);
+      const c=P.reduce((a,v)=>a.add(v),new THREE.Vector3()).multiplyScalar(.25);const bot=P[2].clone().lerp(P[3],.5);
+      n.rugs.push({mesh,piece:p,hot,center:c,bottom:bot});});
+  });
+  /* carpets laid out on the street, placed in metres: d = distance ahead, x = sideways from the middle of the street there,
+     w x l = carpet size (across x along), rot = a small turn so they don't look lined up by a machine */
+  (n.floor||[]).forEach(f=>{
+    const p=pieceById[f.id];if(!p)return;
+    const d=f.d,yb=g.cy+FOC*EYE/d;let L0=null,R0=null;for(let x=-0.3*IW;x<=1.3*IW;x+=2){if(junction(g,x)<=yb){if(L0===null)L0=x;R0=x;}}
+    const X=(L0===null?0:((L0+R0)/2-IW/2)/FOC*d)+(f.x||0),Zc=-d,w=f.w,l=f.l,m=0.09,a=(f.rot||0)*D2R,ca=Math.cos(a),sa=Math.sin(a),W2=w/2+m,L2=l/2+m,y=-EYE+0.006;
+    const V=[[-W2,-L2],[W2,-L2],[W2,L2],[-W2,L2]].map(([u,v])=>new THREE.Vector3(X+u*ca-v*sa,y,Zc+u*sa+v*ca));
     const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(V.flatMap(v=>[v.x,v.y,v.z]),3));
     gg.setAttribute('uv',new THREE.Float32BufferAttribute([0,1,1,1,1,0,0,0],2));gg.setIndex([0,3,1,1,3,2]);
-    let mat;
-    if(hot){mat=new THREE.MeshBasicMaterial({color:0xfff0d6,transparent:true,opacity:0,depthWrite:false});n.mats.push(mat);}
-    else{const t=loadTex('img/w/'+id+'.jpg');t.minFilter=THREE.LinearMipmapLinearFilter;t.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
-      mat=photoMat(t,0xeeeae4);mat.color=mat.uniforms.tint.value;}
-    const mesh=new THREE.Mesh(gg,mat);mesh.userData={piece:p,hot,node:n};grp.add(mesh);
-    const c=V.reduce((a,v)=>a.add(v),new THREE.Vector3()).multiplyScalar(.25);const bot=V[2].clone().lerp(V[3],.5);
-    n.rugs.push({mesh,piece:p,hot,center:c,bottom:bot});
+    const t=loadTex(floorTex(p,f.id));t.minFilter=THREE.LinearMipmapLinearFilter;t.anisotropy=Math.min(COARSE?8:16,renderer.capabilities.getMaxAnisotropy());
+    const mat=photoMat(t,0xeeeae4,false,null,false,{photo:n.ltex,lref:n.lref||.35,m:[m/(w+2*m),m/(l+2*m)],s:[w,l],fringe:f.fringe!=null?f.fringe:p.fringe});
+    mat.transparent=true;mat.depthWrite=false;mat.color=mat.uniforms.tint.value;n.rugMats.push(mat);
+    const mesh=new THREE.Mesh(gg,mat);mesh.renderOrder=2;mesh.userData={piece:p,hot:false,node:n,floor:true};grp.add(mesh);
+    const th=f.t!=null?f.t:({shag:.028,pile:.012,prayer:.009}[p.kind]||0);
+    if(th>=.008){const R=[[-w/2,-l/2],[w/2,-l/2],[w/2,l/2],[-w/2,l/2]].map(([u,v])=>[X+u*ca-v*sa,Zc+u*sa+v*ca]);
+      const mu=m/(w+2*m),mv=m/(l+2*m),e=.004,U=[[mu+e,1-mv-e],[1-mu-e,1-mv-e],[1-mu-e,mv+e],[mu+e,mv+e]];  /* carpet corners in the quad's uv */
+      const pos=[],uv=[],idx=[];const vtx=(xz,yy,t)=>{pos.push(xz[0],yy,xz[1]);uv.push(t[0],t[1]);return pos.length/3-1;};
+      for(let k=0;k<4;k++){const a=k,b=(k+1)%4;const i0=vtx(R[a],y,U[a]),i1=vtx(R[b],y,U[b]),i2=vtx(R[b],y+th,U[b]),i3=vtx(R[a],y+th,U[a]);idx.push(i0,i1,i2,i0,i2,i3,i0,i2,i1,i0,i3,i2);}
+      const t0=vtx(R[0],y+th,U[0]),t1=vtx(R[1],y+th,U[1]),t2=vtx(R[2],y+th,U[2]),t3=vtx(R[3],y+th,U[3]);idx.push(t0,t3,t1,t1,t3,t2);
+      const tg=new THREE.BufferGeometry();tg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));tg.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));tg.setIndex(idx);
+      const m2=photoMat(t,0xeeeae4,false,null,false,{photo:n.ltex,lref:n.lref||.35,m:[mu,mv],s:[w,l],fringe:0});m2.uniforms.tint=mat.uniforms.tint;n.rugMats.push(m2);
+      const tm=new THREE.Mesh(tg,m2);tm.renderOrder=3;grp.add(tm);}
+    const c=new THREE.Vector3(X,y+0.02,Zc),nb=new THREE.Vector3(X-(l/2)*sa,y+0.02,Zc+(l/2)*ca);n.rugs.push({mesh,piece:p,hot:false,center:c,bottom:nb,floor:true});
   });
   /* place node in the world */
   grp.position.set(...n.pos);grp.rotation.y=(n.yaw||0)*D2R;grp.updateMatrixWorld(true);
@@ -728,7 +790,7 @@ ROOMS.forEach((r,i)=>{const n=NODES.find(x=>x.room===r.id);const b=document.crea
   b.onclick=()=>{if(mode==='intro')enter();if(mode==='focus')closePiece();if(n.id==='main')walkTo(FORK,0);else walkTo(n.id);};railEl.appendChild(b);railBtns.push({b,r});});
 
 /* panel */
-const order=NODES.flatMap(n=>(n.slots||[]).map(x=>pieceById[x[1]]));
+const order=[...new Set(NODES.flatMap(n=>[...(n.slots||[]).flatMap(x=>[].concat(x[1])),...(n.floor||[]).map(f=>f.id)]))].map(id=>pieceById[id]).filter(Boolean);
 function openPiece(p){mode='focus';focus=p;poke();document.body.classList.add('focus');D('tip').classList.remove('show');hideEnd();
   NODES.forEach(n=>n.rugs.forEach(r=>{if(r.hot)r.mesh.material.opacity=r.piece===p?0.16:0;else r.mesh.material.color.set(r.piece===p?0xffffff:0xeeeae4);}));
   fillPanel(p);D('panel').classList.add('open');D('panel').setAttribute('aria-hidden','false');history.replaceState(null,'','#piece-'+p.id);}
