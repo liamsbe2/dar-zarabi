@@ -416,6 +416,8 @@ const IW=1024, IH=576, FOC=760, EYE=1.6, DMAX=22, DSKY=70, DBACK=95;
 const GEO={
   hero:{cy:290,j:[[0,775],[195,576],[250,520],[330,452],[400,402],[440,377],[475,357],[500,349],[530,346],[580,347],[600,352],[640,398],[700,432],[760,476],[800,520],[850,576],[1024,771]],
         sky:[[430,-60],[436,96],[470,88],[548,66],[598,88],[606,-60]]},
+  hero_gate:{cy:290,j:[[0,775],[195,576],[250,520],[330,452],[400,402],[440,377],[449,371],[620,371],[640,398],[700,432],[760,476],[800,520],[850,576],[1024,771]],
+        sky:[[430,-60],[436,96],[470,88],[548,66],[598,88],[606,-60]]},
   fork:{cy:298,j:[[0,620],[60,540],[100,470],[130,420],[160,385],[190,362],[215,356],[228,360],[232,398],[270,425],[300,458],[340,485],[380,495],[420,485],[470,470],[520,466],[560,464],[600,457],[650,440],[700,418],[740,398],[758,388],[765,365],[790,360],[820,368],[850,385],[875,410],[900,440],[950,500],[1000,560],[1024,590]],
         sky:[[108,-60],[118,60],[150,110],[190,150],[232,212],[236,40],[400,34],[500,66],[600,58],[700,128],[760,188],[800,172],[832,138],[862,78],[876,-60]]},
   /* the square: one facade straight ahead (~13 m) with three arched passages */
@@ -424,24 +426,24 @@ const GEO={
 const D2R=Math.PI/180;
 const QS=new URLSearchParams(location.search),GRID=(QS.get('grid')||'160,120').split(',').map(Number),GRIDC=QS.get('gridc')==='0'?null:(QS.get('gridc')||'80,60').split(',').map(Number),LODD=+(QS.get('lodd')||5.5);
 const NODES=[
- {id:'main',img:'alley_hero_1c.jpg',sky:'alley_hero_1.png',geo:'hero',room:'classique',pos:[0,0,0],yaw:0,slots:[
+ {id:'main',img:'alley_hero_1g.jpg',sky:'alley_hero_1.png',geo:'hero_gate',gate:{yb:371,poly:[[474.0,371.0],[474.0,285.8],[474.6,275.6],[476.4,267.2],[481.2,258.8],[488.4,250.4],[496.8,243.2],[508.8,236.6],[520.8,231.2],[532.8,227.0],[544.8,231.2],[556.8,236.6],[568.8,244.4],[578.4,252.8],[585.6,261.2],[590.4,270.8],[592.8,279.2],[594.6,291.8],[595.2,371.0]]},room:'classique',pos:[0,0,0],yaw:0,slots:[
    [[[664,160],[988,6],[992,512],[668,368]],['k03','k18'],{rot:90,hi:1}],[[[-40,0],[162,98],[162,465],[-40,560]],'k11',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k02'],
-   [[[348,155],[412,200],[416,355],[356,378]],'k17',{rot:90}],[[[441,226],[466,238],[467,330],[445,338]],'k13',{rot:90}],[[[490,233],[512,240],[512,323],[492,326]],'k03']]},
- {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0,0,-12],yaw:0,seam:[0.56,2.6,1.6],slots:[],
+   [[[348,155],[412,200],[416,355],[356,378]],'k17',{rot:90}]]},
+ {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0.45,0,-15.4],yaw:0,nearFloor:[-1.6,1.5,3],slots:[],
   portals:[{to:'modern',side:'left',yb:462,poly:[[162,462],[163,320],[170,300],[172,285],[180,262],[190,248],[200,238],[212,230],[235,226],[260,223],[282,230],[300,240],[320,252],[333,262],[341,272],[346,284],[349,300],[350,320],[350,462]]},
            {to:'bazaar',side:'center',yb:462,poly:[[412,462],[412,320],[413,303],[416,289],[424,275],[436,261],[450,249],[470,238],[490,229],[510,222],[530,229],[550,238],[570,251],[586,265],[598,279],[606,295],[610,309],[613,330],[614,462]]},
            {to:'moquette',side:'right',yb:462,poly:[[675,462],[675,312],[679,283],[685,272],[695,260],[708,248],[725,237],[742,229],[758,222],[775,227],[792,233],[808,243],[822,255],[833,268],[843,282],[848,296],[850,320],[850,462]]}]},
  {id:'modern',img:'alley_modern_ac.jpg',sky:'alley_modern_a.png',geo:'hero',room:'moderne',slots:[
-   [[[664,158],[986,6],[990,520],[668,372]],['k07','k14'],{rot:90,hi:1}],[[[-40,0],[162,98],[162,465],[-40,560]],'k15',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k05'],
+   [[[664,158],[986,6],[990,520],[668,372]],['k14','k07'],{hi:1,tile:{sz:[[1.6,2.3]],gap:0.45,top:2.65}}],[[[-40,0],[162,98],[162,465],[-40,560]],'k15',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k05'],
    [[[348,155],[412,200],[416,355],[356,378]],'k07',{rot:90}],[[[441,226],[466,238],[467,330],[445,338]],'k14',{rot:90}],[[[490,233],[512,240],[512,323],[492,326]],'k15']]},
- {id:'bazaar',img:'alley_bazaar_bc.jpg',sky:'alley_bazaar_b.png',geo:'hero',room:'bazaar',slots:[
-   [[[662,160],[985,8],[990,525],[665,375]],['k12','k10','k09','k16'],{hi:1}],[[[0,15],[160,98],[160,465],[0,540]],'k08',{hi:1}],
-   [[[210,125],[290,172],[292,450],[214,500]],'k16'],[[[305,198],[326,206],[328,420],[309,442]],'k10'],[[[358,170],[410,198],[412,357],[360,382]],['k09','k12']],
-   [[[437,229],[466,236],[467,341],[440,350]],['k16','k09']],[[[487,239],[509,240],[510,329],[490,331]],'k08']]},
- {id:'moquette',img:'alley_moquette_bc.jpg',sky:'alley_moquette_b.png',geo:'hero',room:'moquette',slots:[
-   [[[660,150],[985,-10],[986,528],[667,373]],['k01','k04'],{rot:90,hi:1}],[[[-5,25],[163,96],[163,465],[-5,545]],'k04',{hi:1}],
-   [[[212,130],[306,184],[309,425],[218,515]],'k01'],[[[358,170],[422,200],[422,348],[362,383]],'k04',{rot:90}],
-   [[[439,220],[467,233],[467,341],[441,354]],'k01'],[[[489,239],[509,240],[510,330],[491,330]],'k04']]}
+ {id:'bazaar',img:'alley_bazaar_bd.jpg',sky:'alley_bazaar_b.png',geo:'hero',room:'bazaar',slots:[
+   [[[662,160],[985,8],[990,525],[665,375]],['k16','k09','k10','k12'],{hi:1,tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],[[[0,15],[160,98],[160,465],[0,540]],'k08',{hi:1}],
+   [[[210,125],[290,172],[292,450],[214,500]],'k16'],[[[305,198],[326,206],[328,420],[309,442]],'k10',{tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],[[[358,170],[410,198],[412,357],[360,382]],['k09','k12'],{tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],
+   [[[437,229],[466,236],[467,341],[440,350]],['k16','k09'],{tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],[[[487,239],[509,240],[510,329],[490,331]],'k08']]},
+ {id:'moquette',img:'alley_moquette_bd.jpg',sky:'alley_moquette_b.png',geo:'hero',room:'moquette',slots:[
+   [[[660,150],[985,-10],[986,528],[667,373]],['k01','k04'],{hi:1,tile:{sz:[[1.2,2.85],[1.0,2.85]],gap:0.5,top:2.9}}],[[[-5,25],[163,96],[163,465],[-5,545]],'k04',{hi:1,tile:{sz:[[1.1,2.85]],gap:0.3,top:2.9,pad:0.05}}],
+   [[[212,130],[306,184],[309,425],[218,515]],['k01','k04'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}],[[[358,170],[422,200],[422,348],[362,383]],['k04','k01'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}],
+   [[[439,220],[467,233],[467,341],[441,354]],['k01','k04'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}],[[[489,239],[509,240],[510,330],[491,330]],['k04','k01'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}]]}
 ];
 const nodeById=Object.fromEntries(NODES.map(n=>[n.id,n]));
 
@@ -537,6 +539,13 @@ function photoMat(tex,tint,apron,skyM,mirror,rug,xdf){const df=Object.assign({},
       vec4 c=texture2D(map,vUv);float ex=min(vUv.x,1.-vUv.x),ey=min(vUv.y,1.-vUv.y);
       float drape=1.-.035*pow(sin(vUv.x*31.4159*rugS.x/3.),2.)*smoothstep(.75,1.,vUv.y)-.05*(1.-smoothstep(0.,.05,1.-vUv.y))-.04*(1.-smoothstep(0.,.06,vUv.y));
       c.rgb*=vLt*drape;float eA=smoothstep(0.,1.5*fwidth(ex),ex)*smoothstep(0.,1.5*fwidth(ey),ey);ra=eA;
+      #ifdef SHAG
+      {float A=1341./1600.;float ty=vUv.y*rugS.y/(rugS.x/A);ty=abs(1.-mod(ty,2.));c=texture2D(map,vec2(vUv.x,ty));c.rgb*=vLt;
+       float X=vUv.x*rugS.x,Y=(1.-vUv.y)*rugS.y;float fk=6.2832/.34;float fold=sin(X*fk+1.3*sin(X*3.1));
+       float sag=smoothstep(.0,.5,Y);c.rgb*=1.-.24*sag*pow(.5+.5*fold,1.5)-.05*(1.-sag)+.05*sag*max(0.,-fold);
+       float wob=.03*sag*fold;float em=min(min(X-wob,rugS.x-X+wob),min(Y,rugS.y-Y));float h=fract(sin(dot(floor(vUv*rugS*90.),vec2(12.9898,78.233)))*43758.5453);
+       ra=smoothstep(0.,max(.012+.014*h,1.5*fwidth(em)),em-.004);c.rgb*=mix(.7,1.,smoothstep(0.,.06,em))*(.97+.06*h);}
+      #endif
       #elif defined(RUGSHADOW)
       /* soft shadow the hung carpet throws on the wall just behind it */
       vec2 q=abs(vUv-.5)*2.;vec2 k=smoothstep(rugM,vec2(1.),q);vec4 c=vec4(0.,0.,0.,1.);ra=(1.-k.x)*(1.-k.y)*lref;
@@ -595,6 +604,11 @@ function buildNode(n){
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('fb',new THREE.Float32BufferAttribute(fb,1));geo.setIndex(idx);return geo;};
   const gmat=photoMat(tex,0xffffff,true,skyM,n.mirror);const geo=mkGrid(GRID[0],GRID[1]);
   n.fine=new THREE.Mesh(geo,gmat);grp.add(n.fine);n.gridGeo=geo;
+  if(n.nearFloor){const [zb,zf,hw]=n.nearFloor,y=-EYE,ga=new THREE.BufferGeometry();const NZ=8,P=[],U=[],F=[],I=[];
+    for(let k=0;k<=NZ;k++){const z=zb+(zf-zb)*k/NZ;for(const x of [-hw,hw]){P.push(x,y,-z);const d=Math.max(1.35,z);U.push(0.5+x/d*FOC/IW,-(1.35-z)/1.35*0.14+0.06);F.push(1);}}
+    for(let k=0;k<NZ;k++){const a=2*k;I.push(a,a+1,a+2,a+1,a+3,a+2);}
+    ga.setAttribute('position',new THREE.Float32BufferAttribute(P,3));ga.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));ga.setAttribute('fb',new THREE.Float32BufferAttribute(F,1));ga.setIndex(I);
+    const nf=new THREE.Mesh(ga,gmat);nf.renderOrder=-1;grp.add(nf);}
   if(n.viaPortal&&GRIDC){n.coarse=new THREE.Mesh(mkGrid(GRIDC[0],GRIDC[1]),gmat);n.coarse.visible=false;grp.add(n.coarse);}
   /* carpets: real Dar Zarabi photos placed on the wall planes */
   n.rugs=[];n.wallRugs=[];
@@ -605,9 +619,14 @@ function buildNode(n){
     const hot=opt&&opt.hot;
     let qq=q;if(!hot){const mx=(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,my=(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4;qq=q.map(([x,y])=>[mx+(x-mx)*1.05,my+(y-my)*1.04]);}
     const V=qq.map(([x,y])=>ray(g,x,y,(opt&&opt.floor)?depthAt(g,x,y)*0.97:wallDepth(g,x)*0.985));
-    const list=Array.isArray(ids)?ids:[ids],N=list.length;const WR={q:qq,parts:[]};if(!hot)n.wallRugs.push(WR);
-    list.forEach((id,k)=>{const p=pieceById[id];const t0=k/N,t1=(k+1)/N;
-      const P=N===1?V:[V[0].clone().lerp(V[1],t0),V[0].clone().lerp(V[1],t1),V[3].clone().lerp(V[2],t1),V[3].clone().lerp(V[2],t0)];
+    let list=Array.isArray(ids)?ids:[ids],N=list.length;const WR={q:qq,parts:[]};if(!hot)n.wallRugs.push(WR);
+    let TQ=null,TT=null;
+    if(opt&&opt.tile){const T=opt.tile,gap=T.gap||0.3,yt=-EYE+(T.top||2.2);const A0=V[0].clone().setY(0),A1=V[1].clone().setY(0),L=A0.distanceTo(A1),dir=A1.clone().sub(A0).normalize();
+      const sz=[];let used=-gap;for(let k=0;;k++){const z=T.sz[k%T.sz.length];if(used+gap+z[0]>L-(T.pad||0.3)*2)break;sz.push(z);used+=gap+z[0];}
+      let o=(L-used)/2;TQ=[];TT=[];const L0=list;list=sz.map((z,k)=>L0[k%L0.length]);N=list.length;
+      sz.forEach(([w,h])=>{const a=A0.clone().addScaledVector(dir,o),b=A0.clone().addScaledVector(dir,o+w);TQ.push([a.clone().setY(yt),b.clone().setY(yt),b.clone().setY(yt-h),a.clone().setY(yt-h)]);TT.push([o/L,(o+w)/L]);o+=w+gap;});}
+    list.forEach((id,k)=>{const p=pieceById[id];const t0=TT?TT[k][0]:k/N,t1=TT?TT[k][1]:(k+1)/N;
+      const P=TQ?TQ[k]:N===1?V:[V[0].clone().lerp(V[1],t0),V[0].clone().lerp(V[1],t1),V[3].clone().lerp(V[2],t1),V[3].clone().lerp(V[2],t0)];
       const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(P.flatMap(v=>[v.x,v.y,v.z]),3));
       const r90=opt&&(Array.isArray(opt.rot)?opt.rot[k]:opt.rot)===90;
       gg.setAttribute('uv',new THREE.Float32BufferAttribute(r90?UV90:UV0,2));gg.setIndex([0,3,1,1,3,2]);
@@ -615,12 +634,12 @@ function buildNode(n){
       if(hot){mat=new THREE.MeshBasicMaterial({color:0xfff0d6,transparent:true,opacity:0,depthWrite:false});n.mats.push(mat);}
       else{const t=loadTex(opt&&opt.hi&&!COARSE&&p&&p.pimg?p.pimg:wallTex(p,id))  /* phones keep the lighter wall copy: memory */;t.minFilter=THREE.LinearMipmapLinearFilter;t.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
         const fl=opt&&opt.floor;
-        mat=photoMat(t,0xeeeae4,false,null,false,null,fl?{}:{WALLRUG:1});mat.color=mat.uniforms.tint.value;
+        mat=photoMat(t,0xeeeae4,false,null,false,null,fl?{}:(p&&p.kind==='shag'?{WALLRUG:1,SHAG:1}:{WALLRUG:1}));mat.color=mat.uniforms.tint.value;
         if(!fl){mat.transparent=true;mat.uniforms.rugS.value.set(P[0].distanceTo(P[1]),P[0].distanceTo(P[3]));
           gg.setAttribute('lt',new THREE.Float32BufferAttribute(new Array(12).fill(1),3));
           /* its shadow on the wall: a slightly larger soft quad just behind it, shifted a little down */
-          const hx=P[1].clone().sub(P[0]).normalize(),vy=P[0].clone().sub(P[3]).normalize(),M=.075,hw=P[0].distanceTo(P[1])/2,hh=P[0].distanceTo(P[3])/2;
-          const S=[[-1,1],[1,1],[1,-1],[-1,-1]].map(([a,b],i)=>P[i].clone().addScaledVector(hx,a*M).addScaledVector(vy,b*M-.045).multiplyScalar(1.006));
+          const shg=p&&p.kind==='shag';const hx=P[1].clone().sub(P[0]).normalize(),vy=P[0].clone().sub(P[3]).normalize(),M=shg?.11:.075,hw=P[0].distanceTo(P[1])/2,hh=P[0].distanceTo(P[3])/2;
+          const S=[[-1,1],[1,1],[1,-1],[-1,-1]].map(([a,b],i)=>P[i].clone().addScaledVector(hx,a*M).addScaledVector(vy,b*M-(shg?.07:.045)).multiplyScalar(1.006));
           const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(S.flatMap(v=>[v.x,v.y,v.z]),3));sg.setAttribute('uv',new THREE.Float32BufferAttribute(UV0,2));sg.setIndex([0,3,1,1,3,2]);
           const sm=photoMat(null,0xffffff,false,null,false,null,{RUGSHADOW:1});sm.transparent=true;sm.depthWrite=false;sm.uniforms.rugM.value.set(Math.max(0,(hw-.03)/(hw+M)),Math.max(0,(hh-.03)/(hh+M)));sm.uniforms.lref.value=.3;
           const sme=new THREE.Mesh(sg,sm);sme.renderOrder=1.5;grp.add(sme);WR.parts.push({geo:gg,t0,t1,sh:sm});}}
@@ -679,6 +698,12 @@ const PORTALS=(FK.portals||[]).map((pt,i)=>{
   return {i,to:pt.to,side:pt.side,mesh,scene,world,ctr,top,zf:ctr.z};
 });
 NODES.forEach(buildNode);
+const GATE=(()=>{const mn=nodeById.main,gt=mn.gate;if(!gt)return null;const g=GEO[mn.geo];const dep=FOC*EYE/(gt.yb-g.cy);
+  const loc=gt.poly.map(([x,y])=>ray(g,x,y,dep));const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(loc.flatMap(v=>[v.x,v.y,v.z]),3));
+  geo.setIndex(THREE.ShapeUtils.triangulateShape(gt.poly.map(([x,y])=>new THREE.Vector2(x,-y)),[]).flat());
+  const R=THREE.ReplaceStencilOp;const mat=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false,depthTest:false,side:THREE.DoubleSide,stencilWrite:true,stencilRef:1,stencilFunc:THREE.AlwaysStencilFunc,stencilZPass:R,stencilFail:R,stencilZFail:R});
+  const mesh=new THREE.Mesh(geo,mat);mesh.matrixAutoUpdate=false;mesh.matrix.copy(mn.grp.matrixWorld);mesh.updateMatrixWorld(true);const scene=new THREE.Scene();scene.add(mesh);
+  return {scene,world:loc.map(v=>v.clone().applyMatrix4(mn.grp.matrixWorld)),z:mn.pos[2]-dep};})();
 
 /* ---------- walking paths ---------- */
 const TAIL=6;
@@ -689,7 +714,7 @@ function mkEdge(id,a,b,fn,tail){const N=240,lut=[0];let prev=fn(0).p,L=0;for(let
   return {id,a,b,fn,L,lut,N,tail};}
 const EDGES={};
 {const A=new THREE.Vector3(...nodeById.main.pos),B=new THREE.Vector3(...FK.pos);const pA=nodeById.main.pitch,pB=FK.pitch;
- EDGES[FORK]=mkEdge(FORK,'main',FORK,t=>({p:A.clone().lerp(B,t),yaw:0,pitch:pA+(pB-pA)*sstep(0.25,1,t)}),0);EDGES[FORK].seam=FK.seam||[0.55,10];}
+ EDGES[FORK]=mkEdge(FORK,'main',FORK,t=>({p:A.clone().lerp(B,t),yaw:0,pitch:pA+(pB-pA)*sstep(0.25,1,t)}),0);}
 /* square -> arch: drift sideways towards the chosen arch while walking, head turned a little towards it,
    then pass straight through the middle of the arch */
 const TURNK=FK.turnK||0.4;
@@ -712,7 +737,8 @@ function screenRect(pts,pad){let x0=2,y0=2,x1=-2,y1=-2;
     if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
   x0=(x0+1)/2-pad;x1=(x1+1)/2+pad;y0=(y0+1)/2-pad;y1=(y1+1)/2+pad;
   if(x1<=0||y1<=0||x0>=1||y0>=1)return null;return [Math.max(0,x0),Math.max(0,y0),Math.min(1,x1),Math.min(1,y1)];}
-function scissor(rt,r){
+let CLIP=null;function isect(a,b){if(!b)return a;if(!a)return b;const r=[Math.max(a[0],b[0]),Math.max(a[1],b[1]),Math.min(a[2],b[2]),Math.min(a[3],b[3])];if(r[2]<=r[0]||r[3]<=r[1])r[2]=r[0],r[3]=r[1];return r;}
+function scissor(rt,r){r=isect(r,CLIP);
   if(rt){if(r){const w=rt.width,h=rt.height,x=Math.floor(r[0]*w),y=Math.floor(r[1]*h);rt.scissor.set(x,y,Math.ceil(r[2]*w)-x,Math.ceil(r[3]*h)-y);rt.scissorTest=true;}else rt.scissorTest=false;renderer.setRenderTarget(rt);}
   else{renderer.setRenderTarget(null);if(r){const x=Math.floor(r[0]*W),y=Math.floor(r[1]*H);renderer.setScissor(x,y,Math.ceil(r[2]*W)-x,Math.ceil(r[3]*H)-y);renderer.setScissorTest(true);}else renderer.setScissorTest(false);}}
 function stencilMode(n,ref){const on=ref>=0;n.mats.forEach(m=>{m.stencilWrite=on;m.stencilRef=on?ref:0;m.stencilFunc=THREE.EqualStencilFunc;m.stencilFail=m.stencilZFail=m.stencilZPass=THREE.KeepStencilOp;});}
@@ -730,8 +756,6 @@ function drawNode(rt,n,keep){
 const PRE=new THREE.ShaderMaterial({uniforms:SEAM,colorWrite:false,
   vertexShader:'varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}',
   fragmentShader:'uniform vec3 seamP,seamN;uniform float seamS,feather;varying vec3 vW;void main(){if(dot(vW-seamP,seamN)-seamS>-feather)discard;gl_FragColor=vec4(0.);}'});
-let preScene=null;nodeById.main.mats.forEach(m=>{m.transparent=true;});
-{const mn=nodeById.main;preScene=new THREE.Scene();const pm0=new THREE.Mesh(mn.gridGeo,PRE);pm0.matrixAutoUpdate=false;pm0.matrix.copy(mn.grp.matrixWorld);pm0.updateMatrixWorld(true);preScene.add(pm0);}
 
 /* state */
 let vel=0,held=0,mouseAt=null,lastHov=0;let mode='intro',focus=null,edge='fork',s=0,sT=0,auto=null,lastRoom=undefined,lookX=0,lookT=0,lookY=0,stepPhase=0,lastT=performance.now(),pendMove=null,SR={left:0,top:0,width:1,height:1};
@@ -857,7 +881,7 @@ function resize(){const r=stage.getBoundingClientRect();SR={left:r.left,top:r.to
   const tv=Math.tan(camera.fov*D2R/2),th=tv*a;fillD=Math.max(1.6,Math.min(1.55/th,2.4/Math.tan(Math.atan(tv)+0.1)));poke();}
 addEventListener('resize',resize);resize();
 /* compile every shader and touch both buffers now, while the intro is showing, instead of mid-walk */
-try{NODES.forEach(n=>renderer.compile(n.scene,camera));PORTALS.forEach(pt=>renderer.compile(pt.scene,camera));renderer.compile(preScene,camera);renderer.compile(vigScene,compCam);}catch(e){}
+try{NODES.forEach(n=>renderer.compile(n.scene,camera));PORTALS.forEach(pt=>renderer.compile(pt.scene,camera));PORTALS.length&&GATE&&renderer.compile(GATE.scene,camera);renderer.compile(vigScene,compCam);}catch(e){}
 const tmp=new THREE.Vector3(),tmp2=new THREE.Vector3(),prevP=new THREE.Vector3();const SEAMNOW={on:false,p:new THREE.Vector3(),n:new THREE.Vector3(),s:0};
 const lastPose=new Float64Array(6).fill(1e9);let lastRendered=false,fEma=16.7,fN=0,goodN=0,coolUntil=0,lastDrop=-1e9;
 const FINFO={calls:0,tris:0,path:'',n:0};renderer.info.autoReset=false;
@@ -889,27 +913,18 @@ function frame(now){
   /* the street moved under a still mouse: what is under the cursor changed too */
   if(mouseAt&&!drag&&mode==='walk'&&now-lastHov>110){lastHov=now;hover(mouseAt);}
   renderer.info.reset();
-  let A,B=null;
-  if(edge===FORK){A=c.t<1?nodeById.main:FK;
-    if(c.t<1){const e=EDGES[edge];SEAM.seamP.value.set(...FK.pos);SEAM.seamN.value.copy(fwdOf(FK.yaw||0));
-      /* the plane stays where the square's photo frame meets the alley walls (so its edges never show), and only
-         slides back once you are close enough that the square's photo fills the view */
-      SEAM.seamS.value=c.t<e.seam[0]?e.seam[1]:e.seam[1]+(-1.6-e.seam[1])*sstep(e.seam[0],1,c.t);
-      SEAM.floorS.value=SEAM.seamS.value+(e.seam[2]||0)*(1-sstep(0.3,0.6,c.t));
-      B=FK;}}
+  let A;const MN=nodeById.main;const inGate=edge===FORK&&c.t<1&&GATE&&camera.position.z>GATE.z+0.4;
+  if(edge===FORK)A=inGate?MN:FK;
   else{const pt=EDGES[edge].portal;A=(camera.position.z>pt.zf+0.3)?FK:nodeById[edge];}
-  SEAMNOW.on=edge===FORK&&c.t<1;SEAMNOW.p.copy(SEAM.seamP.value);SEAMNOW.n.copy(SEAM.seamN.value);SEAMNOW.s=SEAM.seamS.value;
-  if(B){/* the first alley opening onto the square: blend the two along a plane fixed in the street */
-    /* one pass on screen: the square first, but only where the alley in front no longer hides it (depth pre-pass),
-       then the alley on top, faded out beyond the plane */
-    const w=sstep(0.9,1,c.t);SEAM.fadeA.value=1-w;
-    const DB=window.__dbg||{};scissor(null,null);renderer.clear(true,true,true);if(w<=0&&!DB.noPre)renderer.render(preScene,camera);
-    if(!DB.noB)drawNode(null,B,true);renderer.clearDepth();
-    SEAM.seamOn.value=1;if(!DB.noA)renderer.render(A.scene,camera);SEAM.seamOn.value=0;SEAM.floorS.value=-99;
-    renderer.render(vigScene,compCam);FINFO.path='blend';}
-  else{SEAM.seamOn.value=0;drawNode(null,A);renderer.render(vigScene,compCam);FINFO.path='direct';}
+  SEAMNOW.on=false;SEAM.seamOn.value=0;
+  if(inGate){/* the classic alley, and the square only through the gate's opening: square first (clipped to the gate's
+       on-screen box), then the alley everywhere except inside the opening */
+    scissor(null,null);renderer.clear(true,true,true);const r=screenRect(GATE.world,0.004);
+    if(r){CLIP=r;drawNode(null,FK,true);CLIP=null;scissor(null,null);renderer.clearDepth();renderer.clearStencil();renderer.render(GATE.scene,camera);stencilMode(MN,0);}
+    renderer.render(MN.scene,camera);stencilMode(MN,-1);renderer.render(vigScene,compCam);FINFO.path='gate';}
+  else{drawNode(null,A);renderer.render(vigScene,compCam);FINFO.path='direct';}
   FINFO.calls=renderer.info.render.calls;FINFO.tris=renderer.info.render.triangles;FINFO.n++;
-  visNode=edge===FORK&&c.t<1?(c.t>0.6?FK:A):A;if(edge!==FORK&&camera.position.z<EDGES[edge].portal.zf+fillD)visNode=nodeById[edge];
+  visNode=A;if(edge!==FORK&&camera.position.z<EDGES[edge].portal.zf+fillD)visNode=nodeById[edge];
   /* overlays (only touch the page when something actually changes) */
   const showSigns=mode!=='intro'&&atFork()&&!auto;
   signs.forEach(sg=>{if(sg.on!==showSigns){sg.on=showSigns;sg.b.classList.toggle('show',showSigns);}if(!showSigns)return;tmp.copy(sg.loc).project(camera);
