@@ -427,7 +427,7 @@ const NODES=[
  {id:'main',img:'alley_hero_1c.jpg',sky:'alley_hero_1.png',geo:'hero',room:'classique',pos:[0,0,0],yaw:0,slots:[
    [[[664,160],[988,6],[992,512],[668,368]],['k03','k18'],{rot:90,hi:1}],[[[-40,0],[162,98],[162,465],[-40,560]],'k11',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k02'],
    [[[348,155],[412,200],[416,355],[356,378]],'k17',{rot:90}],[[[441,226],[466,238],[467,330],[445,338]],'k13',{rot:90}],[[[490,233],[512,240],[512,323],[492,326]],'k03']]},
- {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0,0,-12],yaw:0,seam:[0.55,11],slots:[],
+ {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0,0,-12],yaw:0,seam:[0.56,2.6,1.6],slots:[],
   portals:[{to:'modern',side:'left',yb:462,poly:[[162,462],[163,320],[170,300],[172,285],[180,262],[190,248],[200,238],[212,230],[235,226],[260,223],[282,230],[300,240],[320,252],[333,262],[341,272],[346,284],[349,300],[350,320],[350,462]]},
            {to:'bazaar',side:'center',yb:462,poly:[[412,462],[412,320],[413,303],[416,289],[424,275],[436,261],[450,249],[470,238],[490,229],[510,222],[530,229],[550,238],[570,251],[586,265],[598,279],[606,295],[610,309],[613,330],[614,462]]},
            {to:'moquette',side:'right',yb:462,poly:[[675,462],[675,312],[679,283],[685,272],[695,260],[708,248],[725,237],[742,229],[758,222],[775,227],[792,233],[808,243],[822,255],[833,268],[843,282],[848,296],[850,320],[850,462]]}]},
@@ -563,7 +563,7 @@ function photoMat(tex,tint,apron,skyM,mirror,rug,xdf){const df=Object.assign({},
       #endif
       float keep=1.;if(seamOn>.5){float dd=dot(vW-seamP,seamN);keep=1.-smoothstep(-feather,feather,dd-seamS);
         /* the paving underfoot stays until the next photo's own ground begins: no smeared floor in between */
-        if(vW.y<-1.52)keep=max(keep,1.-smoothstep(-feather,feather,dd-floorS));}
+        if(vW.y<-1.52)keep=max(keep,1.-smoothstep(-3.*feather,3.*feather,dd-floorS));}
       float din=min(min(vUv.x,1.-vUv.x),1.-vUv.y);float ef=smoothstep(-.24,.09,din)*(1.-smoothstep(.6,1.,vFb));
       float al=seamOn>.5?keep*fadeA:(roleB>.5?ef:1.);
       #if defined(RUG)||defined(WALLRUG)||defined(RUGSHADOW)
@@ -892,7 +892,10 @@ function frame(now){
   let A,B=null;
   if(edge===FORK){A=c.t<1?nodeById.main:FK;
     if(c.t<1){const e=EDGES[edge];SEAM.seamP.value.set(...FK.pos);SEAM.seamN.value.copy(fwdOf(FK.yaw||0));
-      SEAM.seamS.value=c.t<e.seam[0]?e.seam[1]*(1-sstep(0,e.seam[0],c.t)):-1.6*(c.t-e.seam[0])/(1-e.seam[0]);
+      /* the plane stays where the square's photo frame meets the alley walls (so its edges never show), and only
+         slides back once you are close enough that the square's photo fills the view */
+      SEAM.seamS.value=c.t<e.seam[0]?e.seam[1]:e.seam[1]+(-1.6-e.seam[1])*sstep(e.seam[0],1,c.t);
+      SEAM.floorS.value=SEAM.seamS.value+(e.seam[2]||0)*(1-sstep(0.3,0.6,c.t));
       B=FK;}}
   else{const pt=EDGES[edge].portal;A=(camera.position.z>pt.zf+0.3)?FK:nodeById[edge];}
   SEAMNOW.on=edge===FORK&&c.t<1;SEAMNOW.p.copy(SEAM.seamP.value);SEAMNOW.n.copy(SEAM.seamN.value);SEAMNOW.s=SEAM.seamS.value;
@@ -902,7 +905,7 @@ function frame(now){
     const w=sstep(0.9,1,c.t);SEAM.fadeA.value=1-w;
     const DB=window.__dbg||{};scissor(null,null);renderer.clear(true,true,true);if(w<=0&&!DB.noPre)renderer.render(preScene,camera);
     if(!DB.noB)drawNode(null,B,true);renderer.clearDepth();
-    SEAM.seamOn.value=1;if(!DB.noA)renderer.render(A.scene,camera);SEAM.seamOn.value=0;
+    SEAM.seamOn.value=1;if(!DB.noA)renderer.render(A.scene,camera);SEAM.seamOn.value=0;SEAM.floorS.value=-99;
     renderer.render(vigScene,compCam);FINFO.path='blend';}
   else{SEAM.seamOn.value=0;drawNode(null,A);renderer.render(vigScene,compCam);FINFO.path='direct';}
   FINFO.calls=renderer.info.render.calls;FINFO.tris=renderer.info.render.triangles;FINFO.n++;
