@@ -51,8 +51,8 @@ button{cursor:pointer}
 .rug.hot{background:transparent}
 .rug.hot:hover,.rug.hot:focus-visible{background:rgba(255,240,215,.12);outline:2px solid rgba(236,211,157,.85);filter:none}
 .rug.hot.picked{background:rgba(255,240,215,.16);outline:2px solid var(--gold-hi);filter:none}
-.dot3{position:absolute;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--gold-hi);opacity:0;transition:opacity .4s;pointer-events:none;will-change:transform}
-.dot3.show{opacity:.85}
+.dot3{position:absolute;left:0;top:0;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;background:var(--gold-hi);box-shadow:0 0 0 1px rgba(0,0,0,.25);opacity:0;transition:opacity .5s;pointer-events:none;will-change:transform}
+.dot3.show{opacity:.7}
 .ovl{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
 .sign{position:absolute;left:0;top:0;pointer-events:auto;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s .6s;display:grid;justify-items:center;gap:2px;background:rgba(18,14,11,.82);color:var(--ink);border:1px solid rgba(236,211,157,.45);padding:9px 16px 10px;cursor:pointer;font:inherit;will-change:transform}
 .sign.show{opacity:1;visibility:visible;transition:opacity .6s ease .15s}
@@ -472,6 +472,19 @@ function floorLum(img,g){try{const W=192,H=108,cv=document.createElement('canvas
 
 /* a tiny blurred copy of a photo (halved step by step, so it is a true average): floor carpets read the light falling on their spot from it, smooth at any distance and with no mipmap tricks */
 function lightMap(img,cv){try{let src=img,w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;while(w>cv.width*2){const c=document.createElement('canvas');w=Math.max(cv.width,w>>1);h=Math.max(cv.height,h>>1);c.width=w;c.height=h;c.getContext('2d').drawImage(src,0,0,w,h);src=c;}cv.getContext('2d').drawImage(src,0,0,cv.width,cv.height);return true;}catch(e){return false;}}
+/* the light on the plaster around each hung carpet, read from the photo just outside its corners (median of a few
+   samples, so a door or a cable doesn't count), relative to the node's sunlit walls. Sunlit corner ~1, shade ~.6 */
+function wallLight(img,n){try{const W=256,H=144,cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d');cx.drawImage(img,0,0,W,H);
+  const px=cx.getImageData(0,0,W,H).data;const lum=(x,y)=>{const i=Math.max(0,Math.min(W-1,Math.round(x*W/IW))),j=Math.max(0,Math.min(H-1,Math.round(y*H/IH)));const k=(j*W+i)*4;return (px[k]*.299+px[k+1]*.587+px[k+2]*.114)/255;};
+  const med=a=>{a=a.slice().sort((x,y)=>x-y);return a[a.length>>1];};const all=[];
+  const per=n.wallRugs.map(r=>{const q=r.q,mx=(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,my=(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4;const w=Math.abs(q[1][0]-q[0][0])+8;
+    return q.map(([x,y])=>{const sx=Math.sign(x-mx)||1,v=[];for(const f of [.05,.1,.16,.24])for(const g of [0,.12,.25]){const xx=x+sx*w*f,yy=y+(my-y)*g;if(xx<0||xx>IW)continue;v.push(lum(xx,yy));}
+      const L=v.length?med(v):.6;all.push(L);return L;});});
+  if(!all.length)return;const ref=Math.max(.35,all.slice().sort((a,b)=>a-b)[Math.floor(all.length*.8)]);
+  n.wallRugs.forEach((r,i)=>{const L=per[i].map(v=>{const k=Math.max(.5,Math.min(1.06,v/ref));return 1+(k-1)*.85;});
+    r.parts.forEach(pt=>{const a=pt.t0,b=pt.t1;const top0=L[0]+(L[1]-L[0])*a,top1=L[0]+(L[1]-L[0])*b,bot1=L[3]+(L[2]-L[3])*b,bot0=L[3]+(L[2]-L[3])*a;
+      const arr=pt.geo.attributes.lt.array;[top0,top1,bot1,bot0].forEach((v,k)=>{arr[k*3]=v;arr[k*3+1]=v*.995;arr[k*3+2]=v*.985;});pt.geo.attributes.lt.needsUpdate=true;
+      if(pt.sh)pt.sh.uniforms.lref.value=.42*Math.min(1,(top0+top1+bot0+bot1)/4);});});poke();}catch(e){}}
 /* ---------- three.js setup ---------- */
 const stage=D('stage');
 /* performance: everything is drawn straight to the screen in one pass per frame. Resolution follows a pixel budget and drops by
@@ -498,11 +511,11 @@ const vigScene=new THREE.Scene();vigScene.add(new THREE.Mesh(new THREE.PlaneBuff
 const SEAM={seamOn:{value:0},seamP:{value:new THREE.Vector3()},seamN:{value:new THREE.Vector3(0,0,-1)},seamS:{value:0},floorS:{value:-99},feather:{value:0.45},roleB:{value:0},fadeA:{value:1}};
 let MATS=null,GCY=290;
 const SKYP=loadTex('img/sky/plate.jpg');SKYP.wrapS=SKYP.wrapT=THREE.ClampToEdgeWrapping;
-function photoMat(tex,tint,apron,skyM,mirror,rug){const df={};if(apron)df.APRON=1;if(skyM)df.SKY=1;if(mirror)df.MIRROR=1;if(rug)df.RUG=1;
-  const mm=new THREE.ShaderMaterial({defines:df,uniforms:Object.assign({map:{value:tex},tint:{value:new THREE.Color(tint||0xffffff)},skyM:{value:skyM||null},skyP:{value:SKYP},gcy:{value:GCY},gd0:{value:FOC*EYE/(IH-GCY)},
+function photoMat(tex,tint,apron,skyM,mirror,rug,xdf){const df=Object.assign({},xdf||{});if(apron)df.APRON=1;if(skyM)df.SKY=1;if(mirror)df.MIRROR=1;if(rug)df.RUG=1;
+  const mm=new THREE.ShaderMaterial({defines:df,extensions:{derivatives:true},uniforms:Object.assign({map:{value:tex},tint:{value:new THREE.Color(tint||0xffffff)},skyM:{value:skyM||null},skyP:{value:SKYP},gcy:{value:GCY},gd0:{value:FOC*EYE/(IH-GCY)},
     photo:{value:rug?rug.photo:null},lref:{value:rug?rug.lref:.35},rugM:{value:new THREE.Vector2(...(rug?rug.m:[0,0]))},rugS:{value:new THREE.Vector2(...(rug?rug.s:[1,1]))},fringe:{value:rug&&rug.fringe?1:0},shK:{value:.85}},SEAM),
-  vertexShader:'varying vec2 vUv;varying vec3 vW,vL;varying float vFb;\n#ifdef APRON\nattribute float fb;\n#endif\nvoid main(){vUv=uv;vL=position;\n#ifdef APRON\nvFb=fb;\n#else\nvFb=0.;\n#endif\nvec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;\n#ifdef RUG\nvec4 mv=viewMatrix*w;mv.xyz*=.98;gl_Position=projectionMatrix*mv;\n#else\ngl_Position=projectionMatrix*viewMatrix*w;\n#endif\n}',
-  fragmentShader:`uniform sampler2D map,skyM,skyP,photo;uniform vec3 tint;uniform vec2 rugM,rugS;uniform float seamOn,seamS,floorS,feather,roleB,gcy,gd0,fadeA,lref,fringe,shK;varying vec3 vL;uniform vec3 seamP,seamN;varying vec2 vUv;varying vec3 vW;varying float vFb;
+  vertexShader:'varying vec2 vUv;varying vec3 vW,vL,vLt;varying float vFb;\n#ifdef APRON\nattribute float fb;\n#endif\n#ifdef WALLRUG\nattribute vec3 lt;\n#endif\nvoid main(){vUv=uv;vL=position;\n#ifdef WALLRUG\nvLt=lt;\n#else\nvLt=vec3(1.);\n#endif\n\n#ifdef APRON\nvFb=fb;\n#else\nvFb=0.;\n#endif\nvec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;\n#ifdef RUG\nvec4 mv=viewMatrix*w;mv.xyz*=.98;gl_Position=projectionMatrix*mv;\n#else\ngl_Position=projectionMatrix*viewMatrix*w;\n#endif\n}',
+  fragmentShader:`uniform sampler2D map,skyM,skyP,photo;uniform vec3 tint;uniform vec2 rugM,rugS;uniform float seamOn,seamS,floorS,feather,roleB,gcy,gd0,fadeA,lref,fringe,shK;varying vec3 vL,vLt;uniform vec3 seamP,seamN;varying vec2 vUv;varying vec3 vW;varying float vFb;
     void main(){
       #ifdef RUG
       /* a carpet laid on the street: the quad is a little larger than the carpet. Inside: the carpet, lit by the photo's own
@@ -522,7 +535,18 @@ function photoMat(tex,tint,apron,skyM,mirror,rug){const df={};if(apron)df.APRON=
       #ifdef MIRROR
       vec4 c=texture2D(map,vUv);
       #else
+      #if defined(WALLRUG)
+      /* a carpet hung on the wall: lit by the light the photo shows on the plaster around it (sun or shade, per corner),
+         a little darker where it folds over its hanging line and near its lower edge, with smooth anti-aliased borders */
+      vec4 c=texture2D(map,vUv);float ex=min(vUv.x,1.-vUv.x),ey=min(vUv.y,1.-vUv.y);
+      float drape=1.-.035*pow(sin(vUv.x*31.4159*rugS.x/3.),2.)*smoothstep(.75,1.,vUv.y)-.05*(1.-smoothstep(0.,.05,1.-vUv.y))-.04*(1.-smoothstep(0.,.06,vUv.y));
+      c.rgb*=vLt*drape;float eA=smoothstep(0.,1.5*fwidth(ex),ex)*smoothstep(0.,1.5*fwidth(ey),ey);ra=eA;
+      #elif defined(RUGSHADOW)
+      /* soft shadow the hung carpet throws on the wall just behind it */
+      vec2 q=abs(vUv-.5)*2.;vec2 k=smoothstep(rugM,vec2(1.),q);vec4 c=vec4(0.,0.,0.,1.);ra=(1.-k.x)*(1.-k.y)*lref;
+      #else
       vec2 o=max(-vUv,vUv-1.);float ou=max(o.x,o.y);vec4 c=ou>0.?texture2D(map,clamp(vUv,.0005,.9995),min(ou*90.,9.)):texture2D(map,vUv);
+      #endif
       #endif
       #endif
       #ifdef APRON
@@ -546,7 +570,7 @@ function photoMat(tex,tint,apron,skyM,mirror,rug){const df={};if(apron)df.APRON=
         if(vW.y<-1.52)keep=max(keep,1.-smoothstep(-feather,feather,dd-floorS));}
       float din=min(min(vUv.x,1.-vUv.x),1.-vUv.y);float ef=smoothstep(-.24,.09,din)*(1.-smoothstep(.6,1.,vFb));
       float al=seamOn>.5?keep*fadeA:(roleB>.5?ef:1.);
-      #ifdef RUG
+      #if defined(RUG)||defined(WALLRUG)||defined(RUGSHADOW)
       al=(seamOn>.5?keep*fadeA:1.)*ra;
       #endif
       gl_FragColor=vec4(c.rgb*tint,al);}`});if(MATS)MATS.push(mm);return mm;}
@@ -555,7 +579,7 @@ function photoMat(tex,tint,apron,skyM,mirror,rug){const df={};if(apron)df.APRON=
 /* build one photo node as a 3D group */
 function buildNode(n){
   MATS=n.mats=[];const g=GEO[n.geo];GCY=g.cy;const grp=new THREE.Group();const scene=new THREE.Scene();scene.add(grp);
-  n.lcv=document.createElement('canvas');n.lcv.width=32;n.lcv.height=18;n.lcv.getContext('2d').fillStyle='#777';n.lcv.getContext('2d').fillRect(0,0,32,18);n.ltex=new THREE.CanvasTexture(n.lcv);n.ltex.minFilter=n.ltex.magFilter=THREE.LinearFilter;n.ltex.generateMipmaps=false;const tex=loadTex('img/'+n.img,()=>{n.ready=true;n.lref=floorLum(tex.image,g);if(lightMap(tex.image,n.lcv))n.ltex.needsUpdate=true;n.rugMats.forEach(m=>{m.uniforms.lref.value=n.lref;});});n.rugMats=[];tex.minFilter=THREE.LinearMipmapLinearFilter;tex.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
+  n.lcv=document.createElement('canvas');n.lcv.width=32;n.lcv.height=18;n.lcv.getContext('2d').fillStyle='#777';n.lcv.getContext('2d').fillRect(0,0,32,18);n.ltex=new THREE.CanvasTexture(n.lcv);n.ltex.minFilter=n.ltex.magFilter=THREE.LinearFilter;n.ltex.generateMipmaps=false;const tex=loadTex('img/'+n.img,()=>{n.ready=true;n.lref=floorLum(tex.image,g);if(lightMap(tex.image,n.lcv))n.ltex.needsUpdate=true;wallLight(tex.image,n);n.rugMats.forEach(m=>{m.uniforms.lref.value=n.lref;});});n.rugMats=[];tex.minFilter=THREE.LinearMipmapLinearFilter;tex.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
   tex.wrapS=tex.wrapT=n.mirror?THREE.MirroredRepeatWrapping:THREE.ClampToEdgeWrapping;
   let skyM=null;if(n.sky){skyM=loadTex('img/sky/'+n.sky);skyM.minFilter=THREE.LinearFilter;skyM.generateMipmaps=false;}
   /* backdrop: the whole photo on a far plane, fills any gap the near mesh leaves when we move */
@@ -577,7 +601,7 @@ function buildNode(n){
   n.fine=new THREE.Mesh(geo,gmat);grp.add(n.fine);n.gridGeo=geo;
   if(n.viaPortal&&GRIDC){n.coarse=new THREE.Mesh(mkGrid(GRIDC[0],GRIDC[1]),gmat);n.coarse.visible=false;grp.add(n.coarse);}
   /* carpets: real Dar Zarabi photos placed on the wall planes */
-  n.rugs=[];
+  n.rugs=[];n.wallRugs=[];
   /* a slot's id can be a list: the painted carpet's area is then split into that many carpets hung side by side (even widths
      along the wall), so long walls take real proportions instead of one stretched design. opt.rot=90 hangs a carpet sideways. */
   const UV0=[0,1,1,1,1,0,0,0],UV90=[0,0,0,1,1,1,1,0];
@@ -585,7 +609,7 @@ function buildNode(n){
     const hot=opt&&opt.hot;
     let qq=q;if(!hot){const mx=(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,my=(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4;qq=q.map(([x,y])=>[mx+(x-mx)*1.05,my+(y-my)*1.04]);}
     const V=qq.map(([x,y])=>ray(g,x,y,(opt&&opt.floor)?depthAt(g,x,y)*0.97:wallDepth(g,x)*0.985));
-    const list=Array.isArray(ids)?ids:[ids],N=list.length;
+    const list=Array.isArray(ids)?ids:[ids],N=list.length;const WR={q:qq,parts:[]};if(!hot)n.wallRugs.push(WR);
     list.forEach((id,k)=>{const p=pieceById[id];const t0=k/N,t1=(k+1)/N;
       const P=N===1?V:[V[0].clone().lerp(V[1],t0),V[0].clone().lerp(V[1],t1),V[3].clone().lerp(V[2],t1),V[3].clone().lerp(V[2],t0)];
       const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(P.flatMap(v=>[v.x,v.y,v.z]),3));
@@ -594,8 +618,17 @@ function buildNode(n){
       let mat;
       if(hot){mat=new THREE.MeshBasicMaterial({color:0xfff0d6,transparent:true,opacity:0,depthWrite:false});n.mats.push(mat);}
       else{const t=loadTex(opt&&opt.hi&&!COARSE&&p&&p.pimg?p.pimg:wallTex(p,id))  /* phones keep the lighter wall copy: memory */;t.minFilter=THREE.LinearMipmapLinearFilter;t.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());
-        mat=photoMat(t,0xeeeae4);mat.color=mat.uniforms.tint.value;}
-      const mesh=new THREE.Mesh(gg,mat);mesh.userData={piece:p,hot,node:n};grp.add(mesh);
+        const fl=opt&&opt.floor;
+        mat=photoMat(t,0xeeeae4,false,null,false,null,fl?{}:{WALLRUG:1});mat.color=mat.uniforms.tint.value;
+        if(!fl){mat.transparent=true;mat.uniforms.rugS.value.set(P[0].distanceTo(P[1]),P[0].distanceTo(P[3]));
+          gg.setAttribute('lt',new THREE.Float32BufferAttribute(new Array(12).fill(1),3));
+          /* its shadow on the wall: a slightly larger soft quad just behind it, shifted a little down */
+          const hx=P[1].clone().sub(P[0]).normalize(),vy=P[0].clone().sub(P[3]).normalize(),M=.075,hw=P[0].distanceTo(P[1])/2,hh=P[0].distanceTo(P[3])/2;
+          const S=[[-1,1],[1,1],[1,-1],[-1,-1]].map(([a,b],i)=>P[i].clone().addScaledVector(hx,a*M).addScaledVector(vy,b*M-.045).multiplyScalar(1.006));
+          const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(S.flatMap(v=>[v.x,v.y,v.z]),3));sg.setAttribute('uv',new THREE.Float32BufferAttribute(UV0,2));sg.setIndex([0,3,1,1,3,2]);
+          const sm=photoMat(null,0xffffff,false,null,false,null,{RUGSHADOW:1});sm.transparent=true;sm.depthWrite=false;sm.uniforms.rugM.value.set(Math.max(0,(hw-.03)/(hw+M)),Math.max(0,(hh-.03)/(hh+M)));sm.uniforms.lref.value=.3;
+          const sme=new THREE.Mesh(sg,sm);sme.renderOrder=1.5;grp.add(sme);WR.parts.push({geo:gg,t0,t1,sh:sm});}}
+      const mesh=new THREE.Mesh(gg,mat);mesh.userData={piece:p,hot,node:n};if(!hot)mesh.renderOrder=1.6;grp.add(mesh);
       const c=P.reduce((a,v)=>a.add(v),new THREE.Vector3()).multiplyScalar(.25);const bot=P[2].clone().lerp(P[3],.5);
       n.rugs.push({mesh,piece:p,hot,center:c,bottom:bot});});
   });
@@ -705,7 +738,7 @@ let preScene=null;nodeById.main.mats.forEach(m=>{m.transparent=true;});
 {const mn=nodeById.main;preScene=new THREE.Scene();const pm0=new THREE.Mesh(mn.gridGeo,PRE);pm0.matrixAutoUpdate=false;pm0.matrix.copy(mn.grp.matrixWorld);pm0.updateMatrixWorld(true);preScene.add(pm0);}
 
 /* state */
-let mode='intro',focus=null,edge='fork',s=0,sT=0,auto=null,lastRoom=undefined,lookX=0,lookT=0,lookY=0,stepPhase=0,lastT=performance.now(),pendMove=null,SR={left:0,top:0,width:1,height:1};
+let vel=0,held=0,mouseAt=null,lastHov=0;let mode='intro',focus=null,edge='fork',s=0,sT=0,auto=null,lastRoom=undefined,lookX=0,lookT=0,lookY=0,stepPhase=0,lastT=performance.now(),pendMove=null,SR={left:0,top:0,width:1,height:1};
 function atFork(){return (edge===FORK&&s>EDGES[FORK].L-0.6)||(edge!==FORK&&s<0.6);}
 function clampS(){const e=EDGES[edge];const max=e.L+e.tail;if(sT>max)sT=max;if(sT<0){if(edge!==FORK){edge=FORK;s+=EDGES[FORK].L;sT+=EDGES[FORK].L;}else sT=0;}}
 function push(d){if(auto||mode!=='walk')return;
@@ -719,11 +752,21 @@ function walkTo(target,targetS){
   else{if(edge===FORK)route.push([FORK,EDGES[FORK].L]);route.push([target,targetS??EDGES[target].L]);}
   auto={route,i:0};hideEnd();poke();
 }
+/* walking like a person: the body has a speed (vel, m/s) that builds up and dies down with a bounded acceleration,
+   cruising at a walking pace; it never jumps to full speed or stops dead. Returns true once the target is reached. */
+const WALK=1.45,AUTOV=1.75,ACC=2.4,DEC=2.0;
+function moveToward(target,vmax,dt,through){const ds=target-s,ad=Math.abs(ds),dir=Math.sign(ds);
+  if(ad<2e-3&&(through||Math.abs(vel)<.03)){s=target;if(!through)vel=0;return true;}
+  const vT=dir*(through?vmax:Math.min(vmax,Math.sqrt(2*DEC*ad)));const dv=vT-vel;
+  vel+=Math.sign(dv)*Math.min(Math.abs(dv),(Math.abs(vT)>Math.abs(vel)&&Math.sign(vT)===Math.sign(vel||vT)?ACC:DEC*1.6)*dt);
+  const ns=s+vel*dt;if((target-ns)*dir<=0){s=target;if(!through)vel=0;return true;}s=ns;return false;}
+function legDir(i,from){const leg=auto.route[i];if(!leg)return 0;const st=from!=null?from:(leg[0]===FORK?EDGES[FORK].L:0);return Math.sign(leg[1]-st);}
 function stepAuto(dt){
   const leg=auto.route[auto.i];if(!leg){auto=null;poke();return;}
   if(leg[0]!==edge){/* switch at the fork */ if(edge===FORK&&Math.abs(s-EDGES[FORK].L)<0.05){edge=leg[0];s=sT=0;}else if(edge!==FORK&&s<0.05&&leg[0]===FORK){edge=FORK;s=sT=EDGES[FORK].L;}}
-  const dist=leg[1]-s;const v=Math.min(2.6,0.6+Math.abs(dist)*0.9);const ds=Math.sign(dist)*Math.min(Math.abs(dist),v*dt);
-  s+=ds;sT=s;if(Math.abs(leg[1]-s)<0.02){s=sT=leg[1];auto.i++;if(auto.i>=auto.route.length){auto=null;poke();}}
+  const d=Math.sign(leg[1]-s);let nd=0;for(let j=auto.i+1;j<auto.route.length&&!nd;j++)nd=legDir(j);
+  const done=moveToward(leg[1],AUTOV,dt,d!==0&&nd===d);sT=s;
+  if(done){auto.i++;if(auto.i>=auto.route.length){auto=null;poke();}}
 }
 
 /* ---------- input ---------- */
@@ -732,8 +775,8 @@ let drag=null;
 stage.addEventListener('pointerdown',e=>{if(e.target.closest('.sign,.end-ovl'))return;drag={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,moved:0,look:lookT};});
 addEventListener('pointermove',e=>{
   if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved=Math.max(drag.moved,Math.hypot(dx,dy));if(mode!=='walk')return;
-    push((e.clientY-drag.ly)*0.03);drag.ly=e.clientY;lookT=Math.max(-12,Math.min(12,drag.look+dx*0.08));}
-  else if(e.pointerType==='mouse'&&mode==='walk'){lookT=-(e.clientX/innerWidth-.5)*6;pendMove={clientX:e.clientX,clientY:e.clientY};}
+    push((e.clientY-drag.ly)*(e.pointerType==='mouse'?0.03:-0.035));drag.ly=e.clientY;lookT=Math.max(-12,Math.min(12,drag.look+dx*0.08));}
+  else if(e.pointerType==='mouse'&&mode==='walk'){lookT=-(e.clientX/innerWidth-.5)*6;pendMove=mouseAt={clientX:e.clientX,clientY:e.clientY};}
 });
 addEventListener('pointerup',e=>{const d=drag;drag=null;if(!d||d.moved>6)return;
   if(mode==='focus'){if(!e.target.closest('#panel'))closePiece();return;}
@@ -744,11 +787,13 @@ addEventListener('keydown',e=>{
   if(e.target.closest&&e.target.closest('input,select,textarea'))return;
   if(mode==='intro'&&e.key==='Enter'){enter();return;}
   if(mode==='walk'){
-    if(['ArrowUp','w','W'].includes(e.key)){step(1);e.preventDefault();}
-    if(['ArrowDown','s','S'].includes(e.key)){step(-1);e.preventDefault();}
+    const kd=['ArrowUp','w','W'].includes(e.key)?1:['ArrowDown','s','S'].includes(e.key)?-1:0;
+    if(kd){e.preventDefault();if(!e.repeat){step(kd);held=kd;}}
     if(atFork()&&!auto){const k={ArrowLeft:'left',ArrowRight:'right'}[e.key];const br=k&&PORTALS.find(b=>b.side===k);if(br){walkTo(br.to);e.preventDefault();}}
   }else if(mode==='focus'&&e.key==='Escape')closePiece();
 });
+addEventListener('keyup',e=>{const kd=['ArrowUp','w','W'].includes(e.key)?1:['ArrowDown','s','S'].includes(e.key)?-1:0;if(kd&&held===kd)held=0;});
+addEventListener('blur',()=>{held=0;});
 function step(d){if(mode==='focus')closePiece();if(mode==='intro')return enter();push(d*1.6);}
 D('fwdBtn').onclick=()=>step(1);D('backStep').onclick=()=>step(-1);
 
@@ -822,11 +867,13 @@ const lastPose=new Float64Array(6).fill(1e9);let lastRendered=false,fEma=16.7,fN
 const FINFO={calls:0,tris:0,path:'',n:0};renderer.info.autoReset=false;
 let endShown=false;
 function frame(now){
-  now=now||performance.now();const fd=now-lastT;const dt=Math.min(0.05,fd/1000);lastT=now;
-  if(auto)stepAuto(dt);else{const ds=(sT-s);if(Math.abs(ds)<2e-4)s=sT;else{const v=Math.max(-3.2*dt,Math.min(3.2*dt,ds*Math.min(1,dt*3.2)));s+=v;}}
+  now=now||performance.now();const fd=now-lastT;const dt=Math.min(0.1,fd/1000);lastT=now;
+  if(held&&mode==='walk'&&!auto){/* a key held down: keep the goal a little ahead, so the walk goes on at a steady pace */
+    const want=s+held*Math.max(.9,Math.abs(vel)*.9);if(held>0&&edge===FORK&&want>EDGES[FORK].L)sT=EDGES[FORK].L;else{sT=want;clampS();}}
+  if(auto)stepAuto(dt);else if(s!==sT)moveToward(sT,held?WALK:Math.min(2.4,WALK+Math.abs(sT-s)*.25),dt,false);else vel=0;
   if(mode==='intro'){sT=s=0;}
   lookX+=(lookT-lookX)*Math.min(1,dt*4);if(Math.abs(lookT-lookX)<2e-3)lookX=lookT;
-  if(pendMove){hover(pendMove);pendMove=null;}
+  if(pendMove){hover(pendMove);pendMove=null;lastHov=now;}
   const c=camAt(edge,s);const speed=c.p.distanceTo(prevP);prevP.copy(c.p);
   /* walking: a gentle step rhythm that fades in only while moving */
   stepPhase+=speed*Math.PI/0.72;const amp=Math.min(1,speed/(dt||1)/1.4);
@@ -843,6 +890,8 @@ function frame(now){
     if(fN>18&&fEma>26&&now>coolUntil&&rsCap>0.42){rsCap=Math.max(0.42,rsCap*0.8);lastDrop=now;coolUntil=now+1500;fN=0;fEma=16.7;resize();}
     else if(fEma<18){if(++goodN>300&&rsCap<1&&now-lastDrop>12000){rsCap=Math.min(1,rsCap*1.12);goodN=0;fN=0;resize();}}else goodN=0;}
   camera.updateMatrixWorld();pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
+  /* the street moved under a still mouse: what is under the cursor changed too */
+  if(mouseAt&&!drag&&mode==='walk'&&now-lastHov>110){lastHov=now;hover(mouseAt);}
   renderer.info.reset();
   let A,B=null;
   if(edge===FORK){A=c.t<1?nodeById.main:FK;
@@ -865,9 +914,9 @@ function frame(now){
   /* overlays (only touch the page when something actually changes) */
   const showSigns=mode!=='intro'&&atFork()&&!auto;
   signs.forEach(sg=>{if(sg.on!==showSigns){sg.on=showSigns;sg.b.classList.toggle('show',showSigns);}if(!showSigns)return;tmp.copy(sg.loc).project(camera);
-    let x=(tmp.x+1)/2*W,y=(1-tmp.y)/2*H;const m=Math.min(80,W*0.2);const edgeS=tmp.z>1?'':x<m?'l':x>W-m?'r':'';x=Math.max(m,Math.min(W-m,x));y=Math.max(90,Math.min(H-150,y));
+    let x=(tmp.x+1)/2*W,y=(1-tmp.y)/2*H;const m=Math.min(80,W*0.2);const edgeS=tmp.z>1?'':x<m?'l':x>W-m?'r':'';if(!sg.hw)sg.hw=sg.b.offsetWidth/2;const mm=Math.max(m,(sg.hw||0)+10);x=Math.max(mm,Math.min(W-mm,x));y=Math.max(90,Math.min(H-150,y));
     if(sg.b.dataset.edge!==edgeS)sg.b.dataset.edge=edgeS;sg.b.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%)`;});
-  dots.forEach(o=>{let vis=mode==='walk'&&o.n===visNode&&!auto;let show=false;
+  const still=Math.abs(vel)<.25&&!held;dots.forEach(o=>{let vis=mode==='walk'&&o.n===visNode&&!auto&&still;let show=false;
     if(vis&&SEAMNOW.on&&tmp2.copy(o.w).sub(SEAMNOW.p).dot(SEAMNOW.n)>SEAMNOW.s-0.3)vis=false;
     if(vis){tmp.copy(o.w).project(camera);const dist=o.w.distanceTo(camera.position);show=tmp.z<1&&dist<16&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05;
       if(show)o.d.style.transform=`translate(${((tmp.x+1)/2*W).toFixed(1)}px,${((1-tmp.y)/2*H-10).toFixed(1)}px)`;}
@@ -883,7 +932,7 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__museum={openPiece:id=>openPiece(pieceById[id]),enter,walkTo,set:(e,v)=>{edge=e;s=sT=v;auto=null;poke();},lockRS:v=>{rsLock=true;rsCap=v;resize();},perf:()=>({RS:+RS.toFixed(3),rsCap:+rsCap.toFixed(3),W,H,AA,calls:FINFO.calls,tris:FINFO.tris,path:FINFO.path,rendered:FINFO.n}),state:()=>({mode,edge,s:+s.toFixed(2),auto:!!auto,ready:NODES.every(n=>n.ready)}),edges:()=>Object.fromEntries(Object.entries(EDGES).map(([k,v])=>[k,+(v.L+v.tail).toFixed(2)]))};
+window.__museum={openPiece:id=>openPiece(pieceById[id]),enter,walkTo,set:(e,v)=>{edge=e;s=sT=v;vel=0;auto=null;poke();},vel:()=>vel,lockRS:v=>{rsLock=true;rsCap=v;resize();},perf:()=>({RS:+RS.toFixed(3),rsCap:+rsCap.toFixed(3),W,H,AA,calls:FINFO.calls,tris:FINFO.tris,path:FINFO.path,rendered:FINFO.n}),state:()=>({mode,edge,s:+s.toFixed(2),auto:!!auto,ready:NODES.every(n=>n.ready)}),edges:()=>Object.fromEntries(Object.entries(EDGES).map(([k,v])=>[k,+(v.L+v.tail).toFixed(2)]))};
 
 }catch(err){console.error(err);noGL();}
 
