@@ -426,21 +426,21 @@ const GEO={
 const D2R=Math.PI/180;
 const QS=new URLSearchParams(location.search),GRID=(QS.get('grid')||'160,120').split(',').map(Number),GRIDC=QS.get('gridc')==='0'?null:(QS.get('gridc')||'80,60').split(',').map(Number),LODD=+(QS.get('lodd')||5.5);
 const NODES=[
- {id:'main',img:'alley_hero_1g.jpg',sky:'alley_hero_1.png',geo:'hero_gate',gate:{yb:371,poly:[[474.0,371.0],[474.0,285.8],[474.6,275.6],[476.4,267.2],[481.2,258.8],[488.4,250.4],[496.8,243.2],[508.8,236.6],[520.8,231.2],[532.8,227.0],[544.8,231.2],[556.8,236.6],[568.8,244.4],[578.4,252.8],[585.6,261.2],[590.4,270.8],[592.8,279.2],[594.6,291.8],[595.2,371.0]]},room:'classique',pos:[0,0,0],yaw:0,slots:[
+ {id:'main',img:'alley_hero_1h.jpg',sky:'alley_hero_1.png',geo:'hero_gate',gate:{yb:371,poly:[[474.0,371.0],[474.0,285.8],[474.6,275.6],[476.4,267.2],[481.2,258.8],[488.4,250.4],[496.8,243.2],[508.8,236.6],[520.8,231.2],[532.8,227.0],[544.8,231.2],[556.8,236.6],[568.8,244.4],[578.4,252.8],[585.6,261.2],[590.4,270.8],[592.8,279.2],[594.6,291.8],[595.2,371.0]]},room:'classique',doors:[[[[619.5,223],[635.5,214.5],[637.5,395],[624,383]],'door_a.jpg']],pos:[0,0,0],yaw:0,slots:[
    [[[664,160],[988,6],[992,512],[668,368]],['k03','k18'],{rot:90,hi:1}],[[[-40,0],[162,98],[162,465],[-40,560]],'k11',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k02'],
    [[[348,155],[412,200],[416,355],[356,378]],'k17',{rot:90}]]},
- {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0.45,0,-15.4],yaw:0,nearFloor:[-1.6,1.5,3],slots:[],
+ {id:'fork',img:'fork3.jpg',sky:'fork3.png',mirror:1,geo:'fork3',room:null,pos:[0.45,0,-15.4],yaw:0,slots:[],
   portals:[{to:'modern',side:'left',yb:462,poly:[[162,462],[163,320],[170,300],[172,285],[180,262],[190,248],[200,238],[212,230],[235,226],[260,223],[282,230],[300,240],[320,252],[333,262],[341,272],[346,284],[349,300],[350,320],[350,462]]},
            {to:'bazaar',side:'center',yb:462,poly:[[412,462],[412,320],[413,303],[416,289],[424,275],[436,261],[450,249],[470,238],[490,229],[510,222],[530,229],[550,238],[570,251],[586,265],[598,279],[606,295],[610,309],[613,330],[614,462]]},
            {to:'moquette',side:'right',yb:462,poly:[[675,462],[675,312],[679,283],[685,272],[695,260],[708,248],[725,237],[742,229],[758,222],[775,227],[792,233],[808,243],[822,255],[833,268],[843,282],[848,296],[850,320],[850,462]]}]},
- {id:'modern',img:'alley_modern_ac.jpg',sky:'alley_modern_a.png',geo:'hero',room:'moderne',slots:[
+ {id:'modern',img:'alley_modern_ad.jpg',sky:'alley_modern_a.png',geo:'hero',room:'moderne',doors:[[[[621,229],[635.5,221.5],[637.5,394],[625,381.5]],'door_b.jpg'],[[[652,207.5],[670,194],[672,292],[654,293]],'win_a.jpg',{rec:0.12}],[[[600,235.5],[605.5,235],[606,298],[600.5,298]],'win_a.jpg',{rec:0.12}]],slots:[
    [[[664,158],[986,6],[990,520],[668,372]],['k14','k07'],{hi:1,tile:{sz:[[1.6,2.3]],gap:0.45,top:2.65}}],[[[-40,0],[162,98],[162,465],[-40,560]],'k15',{hi:1}],[[[220,128],[302,182],[306,425],[232,480]],'k05'],
    [[[348,155],[412,200],[416,355],[356,378]],'k07',{rot:90}],[[[441,226],[466,238],[467,330],[445,338]],'k14',{rot:90}],[[[490,233],[512,240],[512,323],[492,326]],'k15']]},
- {id:'bazaar',img:'alley_bazaar_bd.jpg',sky:'alley_bazaar_b.png',geo:'hero',room:'bazaar',slots:[
+ {id:'bazaar',img:'alley_bazaar_be.jpg',sky:'alley_bazaar_b.png',geo:'hero',room:'bazaar',doors:[[[[619.5,233.5],[631,228.5],[632,350.5],[621.5,360.5]],'door_b.jpg'],[[[647.5,211.5],[660.5,204.5],[661,300.5],[648.5,300.5]],'win_a.jpg',{rec:0.12}],[[[597,238.5],[603,238],[604,303],[598,303]],'win_a.jpg',{rec:0.12}]],slots:[
    [[[662,160],[985,8],[990,525],[665,375]],['k16','k09','k10','k12'],{hi:1,tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],[[[0,15],[160,98],[160,465],[0,540]],'k08',{hi:1}],
    [[[210,125],[290,172],[292,450],[214,500]],'k16'],[[[305,198],[326,206],[328,420],[309,442]],'k10',{tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],[[[358,170],[410,198],[412,357],[360,382]],['k09','k12'],{tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],
    [[[437,229],[466,236],[467,341],[440,350]],['k16','k09'],{tile:{sz:[[1.05,1.6]],gap:0.38,top:2.45}}],[[[487,239],[509,240],[510,329],[490,331]],'k08']]},
- {id:'moquette',img:'alley_moquette_bd.jpg',sky:'alley_moquette_b.png',geo:'hero',room:'moquette',slots:[
+ {id:'moquette',img:'alley_moquette_be.jpg',sky:'alley_moquette_b.png',geo:'hero',room:'moquette',doors:[[[[619.5,233.5],[631,228.5],[632,350.5],[621.5,360.5]],'door_b.jpg'],[[[647.5,211.5],[660.5,204.5],[661,300.5],[648.5,300.5]],'win_a.jpg',{rec:0.12}],[[[597,238.5],[603,238],[604,303],[598,303]],'win_a.jpg',{rec:0.12}]],slots:[
    [[[660,150],[985,-10],[986,528],[667,373]],['k01','k04'],{hi:1,tile:{sz:[[1.2,2.85],[1.0,2.85]],gap:0.5,top:2.9}}],[[[-5,25],[163,96],[163,465],[-5,545]],'k04',{hi:1,tile:{sz:[[1.1,2.85]],gap:0.3,top:2.9,pad:0.05}}],
    [[[212,130],[306,184],[309,425],[218,515]],['k01','k04'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}],[[[358,170],[422,200],[422,348],[362,383]],['k04','k01'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}],
    [[[439,220],[467,233],[467,341],[441,354]],['k01','k04'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}],[[[489,239],[509,240],[510,330],[491,330]],['k04','k01'],{tile:{sz:[[1.1,2.6],[0.9,2.6]],gap:0.45,top:2.65}}]]}
@@ -514,7 +514,15 @@ function photoMat(tex,tint,apron,skyM,mirror,rug,xdf){const df=Object.assign({},
     photo:{value:rug?rug.photo:null},lref:{value:rug?rug.lref:.35},rugM:{value:new THREE.Vector2(...(rug?rug.m:[0,0]))},rugS:{value:new THREE.Vector2(...(rug?rug.s:[1,1]))},fringe:{value:rug&&rug.fringe?1:0},shK:{value:.85}},SEAM),
   vertexShader:'varying vec2 vUv;varying vec3 vW,vL,vLt;varying float vFb;\n#ifdef APRON\nattribute float fb;\n#endif\n#ifdef WALLRUG\nattribute vec3 lt;\n#endif\nvoid main(){vUv=uv;vL=position;\n#ifdef WALLRUG\nvLt=lt;\n#else\nvLt=vec3(1.);\n#endif\n\n#ifdef APRON\nvFb=fb;\n#else\nvFb=0.;\n#endif\nvec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;\n#ifdef RUG\nvec4 mv=viewMatrix*w;mv.xyz*=.98;gl_Position=projectionMatrix*mv;\n#else\ngl_Position=projectionMatrix*viewMatrix*w;\n#endif\n}',
   fragmentShader:`uniform sampler2D map,skyM,skyP,photo;uniform vec3 tint;uniform vec2 rugM,rugS;uniform float seamOn,seamS,floorS,feather,roleB,gcy,gd0,fadeA,lref,fringe,shK;varying vec3 vL,vLt;uniform vec3 seamP,seamN;varying vec2 vUv;varying vec3 vW;varying float vFb;
+    #ifdef HOLES
+    uniform vec2 holeP[16];uniform int nH;
+    #endif
     void main(){
+      #ifdef HOLES
+      if(vFb<.001){vec2 pp=vec2(vUv.x*1024.,(1.-vUv.y)*576.);for(int k=0;k<4;k++){if(k>=nH)break;vec2 a=holeP[k*4],b=holeP[k*4+1],c=holeP[k*4+2],d=holeP[k*4+3];
+        float s1=(b.x-a.x)*(pp.y-a.y)-(b.y-a.y)*(pp.x-a.x),s2=(c.x-b.x)*(pp.y-b.y)-(c.y-b.y)*(pp.x-b.x),s3=(d.x-c.x)*(pp.y-c.y)-(d.y-c.y)*(pp.x-c.x),s4=(a.x-d.x)*(pp.y-d.y)-(a.y-d.y)*(pp.x-d.x);
+        if((s1>0.&&s2>0.&&s3>0.&&s4>0.)||(s1<0.&&s2<0.&&s3<0.&&s4<0.))discard;}}
+      #endif
       #ifdef RUG
       /* a carpet laid on the street: the quad is a little larger than the carpet. Inside: the carpet, lit by the photo's own
          light on that spot (so shade near the walls falls on it too) and darkened along its edges. Outside: a soft contact
@@ -537,7 +545,10 @@ function photoMat(tex,tint,apron,skyM,mirror,rug,xdf){const df=Object.assign({},
       /* a carpet hung on the wall: lit by the light the photo shows on the plaster around it (sun or shade, per corner),
          a little darker where it folds over its hanging line and near its lower edge, with smooth anti-aliased borders */
       vec4 c=texture2D(map,vUv);float ex=min(vUv.x,1.-vUv.x),ey=min(vUv.y,1.-vUv.y);
-      float drape=1.-.035*pow(sin(vUv.x*31.4159*rugS.x/3.),2.)*smoothstep(.75,1.,vUv.y)-.05*(1.-smoothstep(0.,.05,1.-vUv.y))-.04*(1.-smoothstep(0.,.06,vUv.y));
+      float drape=1.;
+      #ifndef DOOR
+      drape=1.-.035*pow(sin(vUv.x*31.4159*rugS.x/3.),2.)*smoothstep(.75,1.,vUv.y)-.05*(1.-smoothstep(0.,.05,1.-vUv.y))-.04*(1.-smoothstep(0.,.06,vUv.y));
+      #endif
       c.rgb*=vLt*drape;float eA=smoothstep(0.,1.5*fwidth(ex),ex)*smoothstep(0.,1.5*fwidth(ey),ey);ra=eA;
       #ifdef SHAG
       {float A=1341./1600.;float ty=vUv.y*rugS.y/(rugS.x/A);ty=abs(1.-mod(ty,2.));c=texture2D(map,vec2(vUv.x,ty));c.rgb*=vLt;
@@ -604,8 +615,8 @@ function buildNode(n){
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('fb',new THREE.Float32BufferAttribute(fb,1));geo.setIndex(idx);return geo;};
   const gmat=photoMat(tex,0xffffff,true,skyM,n.mirror);const geo=mkGrid(GRID[0],GRID[1]);
   n.fine=new THREE.Mesh(geo,gmat);grp.add(n.fine);n.gridGeo=geo;
-  if(n.nearFloor){const [zb,zf,hw]=n.nearFloor,y=-EYE,ga=new THREE.BufferGeometry();const NZ=8,P=[],U=[],F=[],I=[];
-    for(let k=0;k<=NZ;k++){const z=zb+(zf-zb)*k/NZ;for(const x of [-hw,hw]){P.push(x,y,-z);const d=Math.max(1.35,z);U.push(0.5+x/d*FOC/IW,-(1.35-z)/1.35*0.14+0.06);F.push(1);}}
+  if(n.nearFloor){const [zb,zf,hw]=n.nearFloor,y=-EYE,ga=new THREE.BufferGeometry();const NZ=24,P=[],U=[],F=[],I=[];
+    for(let k=0;k<=NZ;k++){const z=zb+(zf-zb)*k/NZ;for(const x of [-hw,hw]){P.push(x,y,-z);const tz=(z+20)/3.2,De=6+3*Math.abs((tz%2)-1);U.push(0.5+x/De*FOC/IW,1-(g.cy+FOC*EYE/De)/IH);F.push(1);}}
     for(let k=0;k<NZ;k++){const a=2*k;I.push(a,a+1,a+2,a+1,a+3,a+2);}
     ga.setAttribute('position',new THREE.Float32BufferAttribute(P,3));ga.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));ga.setAttribute('fb',new THREE.Float32BufferAttribute(F,1));ga.setIndex(I);
     const nf=new THREE.Mesh(ga,gmat);nf.renderOrder=-1;grp.add(nf);}
@@ -647,6 +658,26 @@ function buildNode(n){
       const c=P.reduce((a,v)=>a.add(v),new THREE.Vector3()).multiplyScalar(.25);const bot=P[2].clone().lerp(P[3],.5);
       n.rugs.push({mesh,piece:p,hot,center:c,bottom:bot});});
   });
+  if(n.doors&&n.doors.length){const hp=[];n.doors.slice(0,4).forEach(([q])=>q.forEach(([x,y])=>hp.push(new THREE.Vector2(x,y))));while(hp.length<16)hp.push(new THREE.Vector2(-9,-9));
+    gmat.defines.HOLES=1;gmat.uniforms.holeP={value:hp};gmat.uniforms.nH={value:Math.min(4,n.doors.length)};gmat.needsUpdate=true;}
+  (n.doors||[]).forEach(([q,tx,opt])=>{const rec=(opt&&opt.rec)||0.16;
+    const Wp=q.map(([x,y])=>ray(g,x,y,wallDepth(g,x)));
+    let nr=new THREE.Vector3().crossVectors(Wp[1].clone().sub(Wp[0]),Wp[3].clone().sub(Wp[0])).normalize();nr.y=0;nr.normalize();if(nr.dot(Wp[0])<0)nr.negate();
+    const Lp=Wp.map(v=>v.clone().addScaledVector(nr,rec));
+    const quad=(P,uv,tx2,shade,opts)=>{const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.Float32BufferAttribute(P.flatMap(v=>[v.x,v.y,v.z]),3));
+      gg.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));gg.setIndex([0,3,1,1,3,2]);gg.setAttribute('lt',new THREE.Float32BufferAttribute(new Array(12).fill(1),3));
+      const t=loadTex('img/'+tx2);t.minFilter=THREE.LinearMipmapLinearFilter;t.anisotropy=Math.min(COARSE?4:8,renderer.capabilities.getMaxAnisotropy());if(opts&&opts.rep){t.wrapS=t.wrapT=THREE.RepeatWrapping;}
+      const mat=photoMat(t,new THREE.Color(shade,shade,shade).getHex(),false,null,false,null,{WALLRUG:1,DOOR:1});mat.side=THREE.DoubleSide;
+      const mesh=new THREE.Mesh(gg,mat);grp.add(mesh);return gg;};
+    const parts=[];
+    parts.push({geo:quad(Lp,UV0,tx,.86),t0:0,t1:1});
+    const rw=rec/1.0;  /* plaster reveals: uv in metres-ish on the limewash texture */
+    const hgt=Wp[0].distanceTo(Wp[3]),wid=Wp[0].distanceTo(Wp[1]);
+    parts.push({geo:quad([Wp[0],Lp[0],Lp[3],Wp[3]],[0,hgt/2,rw/2,hgt/2,rw/2,0,0,0],'wall_limewash.jpg',.6,{rep:1}),t0:0,t1:0});
+    parts.push({geo:quad([Lp[1],Wp[1],Wp[2],Lp[2]],[0,hgt/2,rw/2,hgt/2,rw/2,0,0,0],'wall_limewash.jpg',.74,{rep:1}),t0:1,t1:1});
+    parts.push({geo:quad([Lp[0],Lp[1],Wp[1],Wp[0]],[0,rw/2,wid/2,rw/2,wid/2,0,0,0],'wall_limewash.jpg',.42,{rep:1}),t0:0,t1:1});
+    parts.push({geo:quad([Wp[3],Wp[2],Lp[2],Lp[3]],[0,rw,wid,rw,wid,0,0,0],(opt&&opt.sill)||'ground_stone.jpg',.8,{rep:1}),t0:0,t1:1});
+    n.wallRugs.push({q,parts});});
   /* carpets laid out on the street, placed in metres: d = distance ahead, x = sideways from the middle of the street there,
      w x l = carpet size (across x along), rot = a small turn so they don't look lined up by a machine */
   (n.floor||[]).forEach(f=>{
